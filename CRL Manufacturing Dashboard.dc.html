@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics><meta name="design_doc_mode" content="canvas">
+<link rel="stylesheet" href="nocturne.css">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Sans+Thai:wght@400;500;600&family=Noto+Sans+SC:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+<style>
+body{margin:0;background:#0f111c;color:#e9e9ed;font-family:"Inter","Noto Sans Thai","Noto Sans SC",system-ui,sans-serif}
+a{color:#b5abfc;text-decoration:none}a:hover{color:#d2cefd}
+.dv-turn{padding:40px 44px 32px;border-bottom:1px solid rgba(233,233,237,.1)}
+.dv-thd{display:flex;align-items:baseline;gap:10px;margin:0 0 8px}
+.dv-tid{font:600 10px "IBM Plex Mono",monospace;padding:3px 7px;background:#e9e9ed;color:#161826;border-radius:4px;text-decoration:none}
+.dv-tname{font:500 13px/1.2 "Inter","Noto Sans Thai",sans-serif;color:#e9e9ed}
+.dv-src{font:400 11px/1.6 "Inter","Noto Sans Thai",sans-serif;color:#75798c;margin:0 0 22px;max-width:900px}
+.dv-opts{display:flex;flex-wrap:wrap;gap:34px;align-items:flex-start}
+.dv-opt{flex:none;display:flex;flex-direction:column;gap:10px;scroll-margin-top:16px}
+.dv-oid{font:500 10.5px "IBM Plex Mono",monospace;padding:3px 7px;background:rgba(233,233,237,.1);color:#e9e9ed;border-radius:5px;text-decoration:none}
+.dv-olabel{display:flex;align-items:baseline;gap:8px;font:400 11px/1.4 "Inter","Noto Sans Thai",sans-serif;color:#9397ab;max-width:390px}
+.dv-opt:target .dv-oid{background:#9184d9;color:#161826}
+.dv-next{margin:26px 0 0;font:12px/1.6 "Inter","Noto Sans Thai",sans-serif;color:#75798c}
+.ph{font-size:20px;line-height:1}
+</style></helmet>
+
+<section class="dv-turn" id="t2">
+<div class="dv-thd"><a class="dv-tid" href="#t2">2</a><span class="dv-tname">PK-CRL Line · ต้นแบบบนข้อมูลจริง · 三语 TH / EN / 中文</span></div>
+<p class="dv-src">ทุกตัวเลขในหน้าจอมาจากไฟล์จริงในโฟลเดอร์: SAP export (129 แถว → ใช้ได้ 119 แถว, 8 Production Order, 1–2 พ.ค. 2569) และ “สรุปการผลิตรายวัน 5-2026” ชีต 02-05-26 (PK 273.898 t → CRL 269.904 t, 成材率 98.54%, หยุดเครื่อง 4 ครั้ง 77 นาที, ไฟฟ้า CRL 12,198 หน่วย = 45.19 หน่วย/ตัน) · ชื่อฟิลด์ เกณฑ์ (YIELD 98/95) และรายการ Defect/Downtime ยกมาจาก <span style="font-family:'IBM Plex Mono',monospace">PK_CRL_Dashboard_BabyCoil_BatchTrace_v6.html</span></p>
+<div class="dv-opts">
+
+<!-- ══════════ 2a — KPI first ══════════ -->
+<div class="dv-opt" id="2a">
+<div class="dv-olabel"><a class="dv-oid" href="#2a">2a</a><span>KPI-first · ตัวเลขวันนี้/สะสมก่อน แล้วเจาะลง Order — แท็บ ผลิต / หยุดเครื่อง / พลังงาน / คุณภาพ</span></div>
+<div style="width:390px;height:844px;border-radius:38px;background:#161826;box-shadow:0 0 0 1px #3f424d,0 16px 40px rgba(0,0,0,.65);overflow:hidden;display:flex;flex-direction:column;font-size:14px">
+
+  <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 22px 4px;font-size:11px;color:#9397ab;font-variant-numeric:tabular-nums"><span>08:42</span><span style="display:flex;gap:5px;align-items:center"><i class="ph ph-cell-signal-full" style="font-size:12px"></i><i class="ph ph-wifi-high" style="font-size:12px"></i><i class="ph ph-battery-high" style="font-size:12px"></i></span></div>
+
+  <div style="padding:8px 16px 10px;display:flex;align-items:center;justify-content:space-between;gap:8px">
+    <div style="display:flex;flex-direction:column">
+      <div style="font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;color:#75798c">PK-CRL LINE · PLANT 1300 · WC PK01</div>
+      <div style="font-size:19px;font-weight:500;letter-spacing:-.02em">สรุปการผลิต</div>
+      <sc-if value="{{ showEN }}" hint-placeholder-val="{{ true }}"><div style="font-size:10.5px;color:#75798c">Production overview</div></sc-if>
+      <sc-if value="{{ showCN }}" hint-placeholder-val="{{ true }}"><div style="font-size:10.5px;color:#75798c;font-family:'Noto Sans SC',sans-serif">酸轧线生产运行记录</div></sc-if>
+    </div>
+    <button onClick="{{ go.settings }}" style="width:34px;height:34px;border-radius:8px;border:1px solid rgba(233,233,237,.16);background:transparent;color:#e9e9ed;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none" style-hover="background:rgba(233,233,237,.07)"><i class="ph ph-user" style="font-size:17px"></i></button>
+  </div>
+
+  <div style="padding:0 16px 10px;display:flex;gap:7px;align-items:center">
+    <div style="display:flex;border:1px solid rgba(233,233,237,.16);border-radius:8px;overflow:hidden">
+      <button onClick="{{ go.rDay }}" style="padding:5px 13px;font-size:12px;border:0;cursor:pointer;font-family:inherit;background:{{ dayBg }};color:{{ dayFg }}">วันนี้ 当日</button>
+      <button onClick="{{ go.rSum }}" style="padding:5px 13px;font-size:12px;border:0;border-left:1px solid rgba(233,233,237,.16);cursor:pointer;font-family:inherit;background:{{ sumBg }};color:{{ sumFg }}">สะสม 合计</button>
+    </div>
+    <span style="font-size:10.5px;color:#75798c;font-variant-numeric:tabular-nums">{{ rangeLabel }}</span>
+  </div>
+
+  <div style="flex:1;overflow:auto;padding:0 16px 16px">
+
+    <sc-if value="{{ aHome }}" hint-placeholder-val="{{ true }}">
+    <div style="display:flex;flex-direction:column;gap:9px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px">
+        <div style="background:#232532;border-radius:8px;box-shadow:0 0 0 1px #3f424d;padding:11px 12px">
+          <div style="font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:#9397ab">ผลผลิต CRL</div>
+          <div style="font-size:24px;font-weight:500;font-variant-numeric:tabular-nums;letter-spacing:-.02em;margin-top:3px">{{ k.out }}<span style="font-size:11px;color:#9397ab"> t</span></div>
+          <div style="font-size:10.5px;color:#9397ab;margin-top:2px">เข้า PK {{ k.in }} t</div>
+        </div>
+        <div style="background:#232532;border-radius:8px;box-shadow:0 0 0 1px #3f424d;padding:11px 12px">
+          <div style="font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:#9397ab">成材率 · YIELD</div>
+          <div style="font-size:24px;font-weight:500;font-variant-numeric:tabular-nums;letter-spacing:-.02em;margin-top:3px">{{ k.yield }}<span style="font-size:11px;color:#9397ab"> %</span></div>
+          <div style="height:4px;border-radius:2px;background:rgba(233,233,237,.1);margin-top:7px;position:relative">
+            <div style="position:absolute;left:0;top:0;bottom:0;border-radius:2px;background:#4ec0a8;width:{{ k.yieldW }}"></div>
+            <div style="position:absolute;top:-3px;bottom:-3px;width:1px;background:#e9e9ed;left:60%"></div>
+          </div>
+          <div style="font-size:10px;color:#75798c;margin-top:4px">✓ เหนือเกณฑ์ 98%</div>
+        </div>
+        <button onClick="{{ go.aDown }}" style="text-align:left;font-family:inherit;background:#232532;border-radius:8px;box-shadow:0 0 0 1px #3f424d;padding:11px 12px;border:0;color:#e9e9ed;cursor:pointer" style-hover="box-shadow:0 0 0 1px #9184d9">
+          <div style="font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:#9397ab">หยุดเครื่อง 停机</div>
+          <div style="font-size:24px;font-weight:500;font-variant-numeric:tabular-nums;letter-spacing:-.02em;margin-top:3px">{{ k.dtMin }}<span style="font-size:11px;color:#9397ab"> นาที</span></div>
+          <div style="font-size:10.5px;color:#d9a24e;margin-top:2px">▲ {{ k.dtCnt }} ครั้ง · {{ k.dtHr }} ชม.</div>
+        </button>
+        <div style="background:#232532;border-radius:8px;box-shadow:0 0 0 1px #3f424d;padding:11px 12px">
+          <div style="font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:#9397ab">ไฟฟ้า CRL · kWh/t</div>
+          <div style="font-size:24px;font-weight:500;font-variant-numeric:tabular-nums;letter-spacing:-.02em;margin-top:3px">{{ k.kwhTon }}</div>
+          <div style="font-size:10.5px;color:{{ k.kwhColor }};margin-top:2px">{{ k.kwhNote }}</div>
+        </div>
+      </div>
+
+      <div style="background:#232532;border-radius:8px;box-shadow:0 0 0 1px #3f424d;padding:12px">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px">
+          <div style="font-size:12px;font-weight:500">Production Order · {{ k.orderCount }} รายการ</div>
+          <span style="font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;color:#75798c">Yield vs 98%</span>
+        </div>
+        <sc-if value="{{ showCN }}" hint-placeholder-val="{{ true }}"><div style="font-size:10px;color:#75798c;font-family:'Noto Sans SC',sans-serif;margin-bottom:9px">生产订单 · 良率</div></sc-if>
+        <div style="display:flex;flex-direction:column;gap:9px">
+          <sc-for list="{{ orders }}" as="o" hint-placeholder-count="6">
+          <button onClick="{{ o.open }}" style="display:flex;flex-direction:column;gap:4px;background:transparent;border:0;padding:2px 0;cursor:pointer;color:#e9e9ed;font-family:inherit;text-align:left;width:100%" style-hover="background:rgba(233,233,237,.05)">
+            <span style="display:flex;justify-content:space-between;align-items:baseline;gap:8px">
+              <span style="font:500 11px 'IBM Plex Mono',monospace">{{ o.id }}</span>
+              <span style="font-size:10px;color:#75798c;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ o.desc }}</span>
+              <span style="font-size:11.5px;font-variant-numeric:tabular-nums;color:{{ o.color }}">{{ o.yield }}%</span>
+            </span>
+            <span style="height:7px;border-radius:2px;background:rgba(233,233,237,.09);position:relative;display:block">
+              <span style="position:absolute;left:0;top:0;bottom:0;border-radius:2px;background:{{ o.color }};width:{{ o.w }}"></span>
+            </span>
+            <span style="font-size:10px;color:#75798c;font-variant-numeric:tabular-nums">{{ o.coils }} ม้วน · เข้า {{ o.gi }} kg → ออก {{ o.gr }} kg · loss {{ o.loss }} kg</span>
+          </button>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="background:#232532;border-radius:8px;box-shadow:0 0 0 1px #3f424d;padding:12px">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px">
+          <div style="font-size:12px;font-weight:500">สาเหตุหยุดเครื่อง 2 พ.ค.</div>
+          <a href="#2a" onClick="{{ go.aDown }}" style="font-size:11px;color:#b5abfc;cursor:pointer">Pareto →</a>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:9px">
+          <sc-for list="{{ topCauses }}" as="c" hint-placeholder-count="3">
+          <div style="display:flex;flex-direction:column;gap:4px">
+            <div style="display:flex;justify-content:space-between;font-size:11.5px;gap:8px"><span>{{ c.th }}</span><span style="font-variant-numeric:tabular-nums;color:#9397ab;flex:none">{{ c.min }} นาที</span></div>
+            <div style="height:6px;border-radius:2px;background:rgba(233,233,237,.09)"><div style="height:6px;border-radius:2px;background:#9184d9;width:{{ c.w }}"></div></div>
+          </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="border-radius:8px;box-shadow:0 0 0 1px #5d5294;background:#2b2741;padding:11px 12px;display:flex;gap:10px;align-items:flex-start">
+        <i class="ph ph-warning" style="font-size:17px;color:#d9a24e;margin-top:1px;flex:none"></i>
+        <div>
+          <div style="font-size:12px;font-weight:500">Batch 2650310010 · % Loss 17.07</div>
+          <div style="font-size:11px;color:#b2b6ca;margin-top:2px">เข้า 4,418 kg → ออก 3,664 kg (−754 kg) — สูงผิดปกติ อาจไม่ได้สแกน HRC หรือเป็น Baby Coil</div>
+          <sc-if value="{{ showCN }}" hint-placeholder-val="{{ true }}"><div style="font-size:10.5px;color:#9397ab;margin-top:2px;font-family:'Noto Sans SC',sans-serif">损耗异常 · 可能未扫描热轧卷</div></sc-if>
+          <button onClick="{{ go.aCoil }}" style="margin-top:8px;font-family:inherit;font-size:11.5px;padding:5px 11px;border-radius:8px;border:1px solid #9184d9;background:transparent;color:#9184d9;cursor:pointer" style-hover="background:rgba(145,132,217,.14)">ตรวจสอบม้วนนี้</button>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ aDown }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-direction:column;gap:9px">
+      <div style="display:flex;gap:9px">
+        <div style="flex:1;background:#232532;border-radius:8px;box-shadow:0 0 0 1px #3f424d;padding:10px 11px"><div style="font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:#9397ab">ครั้ง 次</div><div style="font-size:21px;font-weight:500;font-variant-numeric:tabular-nums">4</div></div>
+        <div style="flex:1;background:#232532;border-radius:8px;box-shadow:0 0 0 1px #3f424d;padding:10px 11px"><div style="font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:#9397ab">นาที 分钟</div><div style="font-size:21px;font-weight:500;font-variant-numeric:tabular-nums">77</div></div>
+        <div style="flex:1;background:#232532;border-radius:8px;box-shadow:0 0 0 1px #3f424d;padding:10px 11px"><div style="font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:#9397ab">ชม. 小时</div><div style="font-size:21px;font-weight:500;font-variant-numeric:tabular-nums">1.4</div></div>
+      </div>
+
+      <div style="background:#232532;border-radius:8px;box-shadow:0 0 0 1px #3f424d;padding:12px">
+        <div style="font-size:12px;font-weight:500;margin-bottom:2px">Pareto สาเหตุการหยุดเครื่อง · 2 พ.ค. 2569</div>
+        <div style="font-size:10.5px;color:#75798c;margin-bottom:8px">แท่ง = นาที · เส้น = % สะสม · เปลี่ยนสเปก + เปลี่ยน work roll = 91% ของเวลาที่เสีย</div>
+        <svg viewBox="0 0 330 170" style="width:100%;height:auto;overflow:visible">
+          <line x1="10" y1="130" x2="320" y2="130" stroke="rgba(233,233,237,.18)" stroke-width="1"></line>
+          <line x1="10" y1="20" x2="320" y2="20" stroke="rgba(233,233,237,.08)" stroke-width="1" stroke-dasharray="2 3"></line>
+          <rect x="18" y="20" width="56" height="110" fill="#9184d9"></rect>
+          <rect x="97" y="59.8" width="56" height="70.2" fill="#796cbf"></rect>
+          <rect x="176" y="78.2" width="56" height="51.8" fill="#5d5294"></rect>
+          <rect x="255" y="113.8" width="56" height="16.2" fill="#423a6a"></rect>
+          <polyline points="46,85.6 125,58.4 204,38.3 283,20" fill="none" stroke="#d9a24e" stroke-width="1.6"></polyline>
+          <circle cx="46" cy="85.6" r="2.6" fill="#d9a24e"></circle><circle cx="125" cy="58.4" r="2.6" fill="#d9a24e"></circle><circle cx="204" cy="38.3" r="2.6" fill="#d9a24e"></circle><circle cx="283" cy="20" r="2.6" fill="#d9a24e"></circle>
+          <text x="46" y="16" fill="#9397ab" font-size="9" text-anchor="middle" font-family="IBM Plex Mono, monospace">34′</text>
+          <text x="125" y="55" fill="#9397ab" font-size="9" text-anchor="middle" font-family="IBM Plex Mono, monospace">22′</text>
+          <text x="204" y="74" fill="#9397ab" font-size="9" text-anchor="middle" font-family="IBM Plex Mono, monospace">16′</text>
+          <text x="283" y="109" fill="#9397ab" font-size="9" text-anchor="middle" font-family="IBM Plex Mono, monospace">5′</text>
+          <text x="46" y="143" fill="#9397ab" font-size="8.5" text-anchor="middle">เปลี่ยนสเปก</text>
+          <text x="125" y="143" fill="#9397ab" font-size="8.5" text-anchor="middle">F4 trip</text>
+          <text x="204" y="143" fill="#9397ab" font-size="8.5" text-anchor="middle">แคบ→กว้าง</text>
+          <text x="283" y="143" fill="#9397ab" font-size="8.5" text-anchor="middle">รอยพิมพ์ roll</text>
+          <text x="46" y="156" fill="#75798c" font-size="8" text-anchor="middle" font-family="Noto Sans SC, sans-serif">改规格</text>
+          <text x="125" y="156" fill="#75798c" font-size="8" text-anchor="middle" font-family="Noto Sans SC, sans-serif">F4跳闸</text>
+          <text x="204" y="156" fill="#75798c" font-size="8" text-anchor="middle" font-family="Noto Sans SC, sans-serif">窄改宽</text>
+          <text x="283" y="156" fill="#75798c" font-size="8" text-anchor="middle" font-family="Noto Sans SC, sans-serif">辊印</text>
+        </svg>
+      </div>
+
+      <div style="background:#232532;border-radius:8px;box-shadow:0 0 0 1px #3f424d;padding:12px">
+        <div style="font-size:12px;font-weight:500;margin-bottom:4px">บันทึกการหยุดเครื่อง 停机记录</div>
+        <sc-for list="{{ dtLog }}" as="d" hint-placeholder-count="4">
+        <div style="display:flex;gap:10px;padding:9px 0;border-top:1px solid rgba(233,233,237,.08)">
+          <span style="font:500 10.5px 'IBM Plex Mono',monospace;color:#9397ab;width:66px;flex:none">{{ d.time }}</span>
+          <div style="flex:1">
+            <div style="font-size:11.5px">{{ d.th }}</div>
+            <sc-if value="{{ showCN }}" hint-placeholder-val="{{ true }}"><div style="font-size:10px;color:#75798c;font-family:'Noto Sans SC',sans-serif">{{ d.cn }}</div></sc-if>
+          </div>
+          <span style="font-size:11px;font-variant-numeric:tabular-nums;color:{{ d.color }};flex:none">{{ d.min }}′</span>
+        </div>
+        </sc-for>
+      </div>
+      <div style="background:#232532;border-radius:8px;box-shadow:0 0 0 1px #3f424d;padding:12px;display:flex;justify-content:space-between;font-size:11.5px;font-variant-numeric:tabular-nums">
+        <div><div style="font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:#9397ab">เวลาปฏิทิน 日历</div><div style="font-size:17px;font-weight:500">8.0 ชม.</div></div>
+        <div><div style="font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:#9397ab">ทำงานจริง 实际</div><div style="font-size:17px;font-weight:500">6.6 ชม.</div></div>
+        <div><div style="font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:#9397ab">อัตราทำงาน</div><div style="font-size:17px;font-weight:500;color:#d9a24e">82.50%</div></div>
+      </div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ aEnergy }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-direction:column;gap:9px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px">
+        <div style="background:#232532;border-radius:8px;box-shadow:0 0 0 1px #3f424d;padding:11px 12px"><div style="font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:#9397ab">轧机电耗 CRL</div><div style="font-size:22px;font-weight:500;font-variant-numeric:tabular-nums;margin-top:3px">{{ k.kwhCrl }}<span style="font-size:11px;color:#9397ab"> kWh</span></div><div style="font-size:10.5px;color:#9397ab">{{ k.kwhTon }} kWh/t</div></div>
+        <div style="background:#232532;border-radius:8px;box-shadow:0 0 0 1px #3f424d;padding:11px 12px"><div style="font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:#9397ab">酸洗电耗 PK</div><div style="font-size:22px;font-weight:500;font-variant-numeric:tabular-nums;margin-top:3px">{{ k.kwhPk }}<span style="font-size:11px;color:#9397ab"> kWh</span></div><div style="font-size:10.5px;color:#9397ab">{{ k.kwhTonPk }} kWh/t</div></div>
+      </div>
+      <div style="background:#232532;border-radius:8px;box-shadow:0 0 0 1px #3f424d;padding:12px">
+        <div style="font-size:12px;font-weight:500;margin-bottom:3px">kWh/t รายวัน · 1–8 พ.ค.</div>
+        <div style="font-size:10px;color:#75798c;margin-bottom:6px">เส้นประ = ค่าเฉลี่ยสะสม 42.49 · แท่งวันที่ 2 สูงเพราะเปลี่ยนสเปก 4 ครั้ง</div>
+        <svg viewBox="0 0 330 96" style="width:100%;height:auto">
+          <line x1="0" y1="44" x2="330" y2="44" stroke="#e9e9ed" stroke-width="1" stroke-dasharray="3 3" opacity=".35"></line>
+          <sc-for list="{{ kwhBars }}" as="b" hint-placeholder-count="8">
+          <rect x="{{ b.x }}" y="{{ b.y }}" width="30" height="{{ b.h }}" fill="{{ b.fill }}" rx="1"></rect>
+          </sc-for>
+        </svg>
+        <div style="display:flex;justify-content:space-between;font-size:8.5px;color:#75798c;font-family:'IBM Plex Mono',monospace"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span></div>
+      </div>
+      <div style="background:#232532;border-radius:8px;box-shadow:0 0 0 1px #3f424d;padding:12px">
+        <div style="font-size:12px;font-weight:500;margin-bottom:4px">การใช้ทรัพยากรอื่น 消耗</div>
+        <sc-for list="{{ util }}" as="u" hint-placeholder-count="4">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-top:1px solid rgba(233,233,237,.08)">
+          <div><div style="font-size:11.5px">{{ u.th }}</div><div style="font-size:10px;color:#75798c;font-family:'Noto Sans SC',sans-serif">{{ u.cn }}</div></div>
+          <div style="text-align:right"><div style="font-size:12.5px;font-variant-numeric:tabular-nums">{{ u.v }}</div><div style="font-size:10px;color:#75798c;font-variant-numeric:tabular-nums">{{ u.per }}</div></div>
+        </div>
+        </sc-for>
+      </div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ aQual }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-direction:column;gap:9px">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px">
+        <div style="background:#232532;border-radius:8px;box-shadow:0 0 0 1px #3f424d;padding:10px 11px"><div style="font-size:9px;letter-spacing:.09em;text-transform:uppercase;color:#9397ab">เกรด A 一级品率</div><div style="font-size:18px;font-weight:500;font-variant-numeric:tabular-nums">{{ k.gradeA }}%</div></div>
+        <div style="background:#232532;border-radius:8px;box-shadow:0 0 0 1px #3f424d;padding:10px 11px"><div style="font-size:9px;letter-spacing:.09em;text-transform:uppercase;color:#9397ab">เกรด B 级品</div><div style="font-size:18px;font-weight:500;font-variant-numeric:tabular-nums">{{ k.gradeB }} t</div></div>
+        <div style="background:#232532;border-radius:8px;box-shadow:0 0 0 1px #3f424d;padding:10px 11px"><div style="font-size:9px;letter-spacing:.09em;text-transform:uppercase;color:#9397ab">เศษรีด 轧机废料</div><div style="font-size:18px;font-weight:500;font-variant-numeric:tabular-nums">{{ k.scrap }}</div></div>
+      </div>
+      <div style="background:#232532;border-radius:8px;box-shadow:0 0 0 1px #3f424d;padding:12px">
+        <div style="font-size:12px;font-weight:500;margin-bottom:10px">เศษวัสดุแยกประเภท · 2 พ.ค. (kg)</div>
+        <div style="display:flex;flex-direction:column;gap:9px">
+          <sc-for list="{{ scrapBars }}" as="s" hint-placeholder-count="5">
+          <div style="display:flex;flex-direction:column;gap:4px">
+            <div style="display:flex;justify-content:space-between;font-size:11.5px;gap:8px"><span>{{ s.th }} <span style="color:#75798c;font-size:10px;font-family:'Noto Sans SC',sans-serif">{{ s.cn }}</span></span><span style="font-variant-numeric:tabular-nums;color:#9397ab;flex:none">{{ s.kg }}</span></div>
+            <div style="height:6px;border-radius:2px;background:rgba(233,233,237,.09)"><div style="height:6px;border-radius:2px;background:#9184d9;width:{{ s.w }}"></div></div>
+          </div>
+          </sc-for>
+        </div>
+      </div>
+      <div style="background:#232532;border-radius:8px;box-shadow:0 0 0 1px #3f424d;padding:12px">
+        <div style="font-size:12px;font-weight:500;margin-bottom:6px">QC ที่บันทึกมือ · 质量概述</div>
+        <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:4px">
+          <span style="font-size:10.5px;padding:3px 9px;border-radius:99px;background:#423a6a;color:#d2cefd">เกรด B · 边裂 1 ม้วน</span>
+          <span style="font-size:10.5px;padding:3px 9px;border-radius:99px;background:rgba(233,233,237,.09);color:#b2b6ca">Edge Damage</span>
+        </div>
+        <div style="font-size:10.5px;color:#75798c;line-height:1.6">บันทึกจากหน้างานผ่านฟอร์ม QC (Batch → เกรด A/B/C → ประเภทปัญหา → Scrap PK/CRL → เวลาหยุด) แล้วผูกเข้ากับ Batch ของ SAP อัตโนมัติ</div>
+      </div>
+      <div style="background:#232532;border-radius:8px;box-shadow:0 0 0 1px #3f424d;padding:12px">
+        <div style="font-size:12px;font-weight:500;margin-bottom:3px">สืบย้อน Batch · 批号追溯</div>
+        <div style="display:flex;gap:7px;align-items:center;margin:8px 0 6px">
+          <span style="flex:1;display:flex;align-items:center;gap:7px;border:1px solid rgba(233,233,237,.16);border-radius:8px;padding:7px 10px;color:#75798c;font-size:12px"><i class="ph ph-magnifying-glass" style="font-size:14px"></i>CRC / HRC Batch หรือ Order</span>
+          <button style="width:34px;height:34px;border-radius:8px;border:1px solid rgba(233,233,237,.16);background:transparent;color:#e9e9ed;cursor:pointer;flex:none" style-hover="background:rgba(233,233,237,.07)"><i class="ph ph-qr-code" style="font-size:16px"></i></button>
+        </div>
+        <sc-for list="{{ coilList }}" as="c" hint-placeholder-count="3">
+        <button onClick="{{ go.aCoil }}" style="width:100%;text-align:left;font-family:inherit;color:#e9e9ed;background:transparent;border:0;border-top:1px solid rgba(233,233,237,.08);padding:9px 0;display:flex;justify-content:space-between;align-items:center;cursor:pointer" style-hover="background:rgba(233,233,237,.05)">
+          <div><div style="font:500 11.5px 'IBM Plex Mono',monospace">{{ c.id }}</div><div style="font-size:10px;color:#75798c">{{ c.meta }}</div></div>
+          <div style="text-align:right;flex:none"><div style="font-size:11px;color:{{ c.color }}">{{ c.status }}</div><div style="font-size:10px;color:#75798c;font-variant-numeric:tabular-nums">{{ c.loss }}</div></div>
+        </button>
+        </sc-for>
+      </div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ aOrder }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-direction:column;gap:9px">
+      <button onClick="{{ go.aHome }}" style="align-self:flex-start;display:flex;align-items:center;gap:5px;background:transparent;border:0;color:#b5abfc;font-family:inherit;font-size:12px;cursor:pointer;padding:0"><i class="ph ph-arrow-left" style="font-size:14px"></i>สรุปการผลิต</button>
+      <div>
+        <div style="font:500 20px 'IBM Plex Mono',monospace;letter-spacing:-.02em">138100000568</div>
+        <div style="font-size:11.5px;color:#9397ab">HRC 4.50 x 383 SPHC → CRC 2.90 x 383 SPCC</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px">
+        <div style="background:#232532;border-radius:8px;box-shadow:0 0 0 1px #3f424d;padding:10px 11px"><div style="font-size:9px;letter-spacing:.09em;text-transform:uppercase;color:#9397ab">ม้วน 卷</div><div style="font-size:18px;font-weight:500;font-variant-numeric:tabular-nums">23</div></div>
+        <div style="background:#232532;border-radius:8px;box-shadow:0 0 0 1px #3f424d;padding:10px 11px"><div style="font-size:9px;letter-spacing:.09em;text-transform:uppercase;color:#9397ab">Yield</div><div style="font-size:18px;font-weight:500;font-variant-numeric:tabular-nums;color:#d9a24e">97.83%</div></div>
+        <div style="background:#232532;border-radius:8px;box-shadow:0 0 0 1px #3f424d;padding:10px 11px"><div style="font-size:9px;letter-spacing:.09em;text-transform:uppercase;color:#9397ab">Loss</div><div style="font-size:18px;font-weight:500;font-variant-numeric:tabular-nums">2,270</div></div>
+      </div>
+      <div style="border-radius:8px;box-shadow:0 0 0 1px #5d5294;background:#2b2741;padding:11px 12px;font-size:11px;color:#b2b6ca;line-height:1.6">
+        Order นี้ต่ำกว่าเกณฑ์ 98% — 78% ของ loss ทั้ง Order มาจาก 3 ม้วนแรกที่รีดต่อจากการเปลี่ยนสเปก 417×3.5 → 383×4.5 เมื่อ 23:42
+      </div>
+      <div style="background:#232532;border-radius:8px;box-shadow:0 0 0 1px #3f424d;padding:12px">
+        <div style="font-size:12px;font-weight:500;margin-bottom:4px">ม้วนใน Order นี้</div>
+        <sc-for list="{{ orderCoils }}" as="c" hint-placeholder-count="5">
+        <button onClick="{{ go.aCoil }}" style="width:100%;text-align:left;font-family:inherit;color:#e9e9ed;background:transparent;border:0;border-top:1px solid rgba(233,233,237,.08);padding:9px 0;display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;cursor:pointer" style-hover="background:rgba(233,233,237,.05)">
+          <span><span style="display:block;font:500 11.5px 'IBM Plex Mono',monospace">{{ c.id }}</span><span style="display:block;font-size:10px;color:#75798c;font-family:'IBM Plex Mono',monospace">← {{ c.hrc }} · {{ c.time }}</span></span>
+          <span style="text-align:right"><span style="display:block;font-size:11.5px;font-variant-numeric:tabular-nums;color:{{ c.color }}">{{ c.pct }}%</span><span style="display:block;font-size:10px;color:#75798c;font-variant-numeric:tabular-nums">−{{ c.loss }} kg</span></span>
+        </button>
+        </sc-for>
+      </div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ aCoil }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <button onClick="{{ go.aOrder }}" style="align-self:flex-start;display:flex;align-items:center;gap:5px;background:transparent;border:0;color:#b5abfc;font-family:inherit;font-size:12px;cursor:pointer;padding:0"><i class="ph ph-arrow-left" style="font-size:14px"></i>Order 138100000568</button>
+      <div>
+        <div style="font:500 20px 'IBM Plex Mono',monospace;letter-spacing:-.02em">2650310010</div>
+        <div style="font-size:11.5px;color:#9397ab">CRC 2.90 x 383 SPCC · Coil Number 1</div>
+      </div>
+      <div style="display:flex;gap:7px;flex-wrap:wrap">
+        <span style="font-size:10.5px;padding:3px 9px;border-radius:99px;background:#423a6a;color:#d2cefd">% Loss 17.07</span>
+        <span style="font-size:10.5px;padding:3px 9px;border-radius:99px;background:rgba(217,162,78,.16);color:#d9a24e">✕ ต้องตรวจสอบ</span>
+        <span style="font-size:10.5px;padding:3px 9px;border-radius:99px;background:rgba(233,233,237,.09);color:#b2b6ca;font-family:'Noto Sans SC',sans-serif">可能未扫描热轧卷</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px">
+        <div style="background:#232532;border-radius:8px;box-shadow:0 0 0 1px #3f424d;padding:10px 11px"><div style="font-size:9px;letter-spacing:.09em;text-transform:uppercase;color:#9397ab">GI เข้า / GR ออก</div><div style="font-size:16px;font-weight:500;font-variant-numeric:tabular-nums">4,418 / 3,664 kg</div></div>
+        <div style="background:#232532;border-radius:8px;box-shadow:0 0 0 1px #3f424d;padding:10px 11px"><div style="font-size:9px;letter-spacing:.09em;text-transform:uppercase;color:#9397ab">Weight Loss</div><div style="font-size:16px;font-weight:500;font-variant-numeric:tabular-nums;color:#d9a24e">754 kg</div></div>
+      </div>
+      <div style="background:#232532;border-radius:8px;box-shadow:0 0 0 1px #3f424d;padding:12px">
+        <div style="font-size:12px;font-weight:500;margin-bottom:4px">เส้นทางของม้วน · 批号追溯</div>
+        <sc-for list="{{ trace }}" as="t" hint-placeholder-count="4">
+        <div style="display:flex;gap:11px;padding:9px 0;border-top:1px solid rgba(233,233,237,.08)">
+          <span style="font:500 10.5px 'IBM Plex Mono',monospace;color:#9397ab;width:62px;flex:none">{{ t.time }}</span>
+          <div style="flex:1"><div style="font-size:11.5px">{{ t.th }}</div><div style="font-size:10px;color:#75798c">{{ t.meta }}</div></div>
+        </div>
+        </sc-for>
+      </div>
+      <div style="background:#232532;border-radius:8px;box-shadow:0 0 0 1px #3f424d;padding:12px">
+        <div style="font-size:12px;font-weight:500;margin-bottom:6px">เทียบกับม้วนอื่นใน Order</div>
+        <div style="display:flex;align-items:flex-end;gap:3px;height:52px">
+          <sc-for list="{{ lossBars }}" as="b" hint-placeholder-count="12">
+          <span style="flex:1;border-radius:1px;background:{{ b.fill }};height:{{ b.h }}"></span>
+          </sc-for>
+        </div>
+        <div style="font-size:10.5px;color:#75798c;margin-top:7px">ค่ากลางของ Order นี้อยู่ที่ 1.4% — ม้วนนี้สูงกว่า 12 เท่า</div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button style="flex:1;font-family:inherit;font-size:12px;padding:9px;border-radius:8px;border:1px solid #9184d9;background:transparent;color:#9184d9;cursor:pointer" style-hover="background:rgba(145,132,217,.14)">บันทึก QC / ระบุสาเหตุ</button>
+        <button style="flex:none;font-family:inherit;font-size:12px;padding:9px 13px;border-radius:8px;border:1px solid rgba(233,233,237,.16);background:transparent;color:#e9e9ed;cursor:pointer" style-hover="background:rgba(233,233,237,.07)">แนบรูป</button>
+      </div>
+    </div>
+    </sc-if>
+
+  </div>
+
+  <div style="display:flex;border-top:1px solid rgba(233,233,237,.1);padding:7px 8px 20px;background:#1b1d2b">
+    <button onClick="{{ go.aHome }}" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;background:transparent;border:0;cursor:pointer;font-family:inherit;font-size:9.5px;color:{{ tab1 }}"><i class="ph ph-chart-bar" style="font-size:19px"></i>ผลิต</button>
+    <button onClick="{{ go.aDown }}" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;background:transparent;border:0;cursor:pointer;font-family:inherit;font-size:9.5px;color:{{ tab2 }}"><i class="ph ph-timer" style="font-size:19px"></i>หยุดเครื่อง</button>
+    <button onClick="{{ go.aEnergy }}" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;background:transparent;border:0;cursor:pointer;font-family:inherit;font-size:9.5px;color:{{ tab3 }}"><i class="ph ph-lightning" style="font-size:19px"></i>พลังงาน</button>
+    <button onClick="{{ go.aQual }}" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;background:transparent;border:0;cursor:pointer;font-family:inherit;font-size:9.5px;color:{{ tab4 }}"><i class="ph ph-seal-check" style="font-size:19px"></i>คุณภาพ</button>
+  </div>
+</div>
+</div>
+
+<!-- ══════════ 2b — Order/Coil first ══════════ -->
+<div class="dv-opt" id="2b">
+<div class="dv-olabel"><a class="dv-oid" href="#2b">2b</a><span>Order-first · หน้าแรกคือ Production Order 8 รายการจากไฟล์จริง เรียงตามน้ำหนักที่สูญเสีย → ม้วน → HRC/CRC trace</span></div>
+<div style="width:390px;height:844px;border-radius:38px;background:#161826;box-shadow:0 0 0 1px #3f424d,0 16px 40px rgba(0,0,0,.65);overflow:hidden;display:flex;flex-direction:column;font-size:14px">
+  <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 22px 4px;font-size:11px;color:#9397ab;font-variant-numeric:tabular-nums"><span>08:42</span><span style="display:flex;gap:5px;align-items:center"><i class="ph ph-cell-signal-full" style="font-size:12px"></i><i class="ph ph-wifi-high" style="font-size:12px"></i><i class="ph ph-battery-high" style="font-size:12px"></i></span></div>
+  <div style="padding:8px 16px 12px;display:flex;align-items:center;justify-content:space-between;gap:8px">
+    <div>
+      <div style="font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;color:#75798c">{{ bCrumb }}</div>
+      <div style="font-size:19px;font-weight:500;letter-spacing:-.02em">{{ bTitle }}</div>
+    </div>
+    <button onClick="{{ go.settings }}" style="width:34px;height:34px;border-radius:8px;border:1px solid rgba(233,233,237,.16);background:transparent;color:#e9e9ed;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none" style-hover="background:rgba(233,233,237,.07)"><i class="ph ph-sliders-horizontal" style="font-size:17px"></i></button>
+  </div>
+  <div style="flex:1;overflow:auto;padding:0 16px 16px">
+
+    <sc-if value="{{ bHome }}" hint-placeholder-val="{{ true }}">
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;gap:14px;padding:0 2px 2px;font-size:11px;color:#9397ab;font-variant-numeric:tabular-nums">
+        <span>GI <strong style="color:#e9e9ed;font-weight:500">638,052</strong></span>
+        <span>GR <strong style="color:#e9e9ed;font-weight:500">630,446</strong></span>
+        <span>Loss <strong style="color:#d9a24e;font-weight:500">7,606 kg</strong></span>
+      </div>
+      <sc-for list="{{ orderCards }}" as="o" hint-placeholder-count="8">
+      <button onClick="{{ o.open }}" style="text-align:left;font-family:inherit;color:#e9e9ed;background:#232532;border:0;border-radius:8px;box-shadow:0 0 0 1px {{ o.edge }};padding:12px 13px;cursor:pointer;display:flex;flex-direction:column;gap:8px" style-hover="box-shadow:0 0 0 1px #9184d9">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px">
+          <span style="font:500 15px 'IBM Plex Mono',monospace;letter-spacing:-.01em">{{ o.id }}</span>
+          <span style="font-size:11px;color:{{ o.color }}">{{ o.glyph }} {{ o.yield }}%</span>
+        </div>
+        <div style="font-size:10.5px;color:#9397ab;font-family:'IBM Plex Mono',monospace">{{ o.route }}</div>
+        <div style="display:flex;align-items:flex-end;gap:14px">
+          <div><div style="font-size:9px;letter-spacing:.09em;text-transform:uppercase;color:#9397ab">ม้วน</div><div style="font-size:17px;font-weight:500;font-variant-numeric:tabular-nums;line-height:1.2">{{ o.coils }}</div></div>
+          <div><div style="font-size:9px;letter-spacing:.09em;text-transform:uppercase;color:#9397ab">เข้า → ออก (kg)</div><div style="font-size:13px;font-variant-numeric:tabular-nums;line-height:1.55;color:#b2b6ca">{{ o.gi }} → {{ o.gr }}</div></div>
+          <div style="margin-left:auto;text-align:right"><div style="font-size:9px;letter-spacing:.09em;text-transform:uppercase;color:#9397ab">Loss</div><div style="font-size:13px;font-variant-numeric:tabular-nums;line-height:1.55;color:{{ o.color }}">{{ o.loss }}</div></div>
+        </div>
+        <div style="font-size:10px;color:#75798c">{{ o.date }} · {{ o.wc }}</div>
+      </button>
+      </sc-for>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ bOrder }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <button onClick="{{ go.bHome }}" style="align-self:flex-start;display:flex;align-items:center;gap:5px;background:transparent;border:0;color:#b5abfc;font-family:inherit;font-size:12px;cursor:pointer;padding:0"><i class="ph ph-arrow-left" style="font-size:14px"></i>Order ทั้งหมด</button>
+      <div style="background:#232532;border-radius:8px;box-shadow:0 0 0 1px #3f424d;padding:12px">
+        <div style="display:flex;justify-content:space-between;align-items:baseline"><div style="font-size:12px;font-weight:500">% Loss รายม้วน · เรียงตามเวลา GI</div><div style="font-size:10.5px;color:#75798c">23 ม้วน</div></div>
+        <svg viewBox="0 0 330 92" style="width:100%;height:auto;margin-top:8px">
+          <line x1="0" y1="70" x2="330" y2="70" stroke="rgba(233,233,237,.18)" stroke-width="1"></line>
+          <line x1="0" y1="42" x2="330" y2="42" stroke="#e9e9ed" stroke-width="1" stroke-dasharray="3 3" opacity=".3"></line>
+          <text x="330" y="38" fill="#9397ab" font-size="8" text-anchor="end">2%</text>
+          <sc-for list="{{ orderLossBars }}" as="b" hint-placeholder-count="23">
+          <rect x="{{ b.x }}" y="{{ b.y }}" width="11" height="{{ b.h }}" fill="{{ b.fill }}" rx="1"></rect>
+          </sc-for>
+        </svg>
+        <div style="font-size:10px;color:#75798c;margin-top:4px">แท่งสีเข้ม = เกินเกณฑ์ 2% · ม้วนแรกของ Order สูงสุดที่ 17.07%</div>
+      </div>
+      <div style="background:#232532;border-radius:8px;box-shadow:0 0 0 1px #3f424d;padding:12px">
+        <div style="font-size:12px;font-weight:500;margin-bottom:4px">รายการม้วน · CRC ← HRC</div>
+        <sc-for list="{{ orderCoils }}" as="c" hint-placeholder-count="6">
+        <button onClick="{{ go.bCoil }}" style="width:100%;text-align:left;font-family:inherit;color:#e9e9ed;background:transparent;border:0;border-top:1px solid rgba(233,233,237,.08);padding:9px 0;display:flex;justify-content:space-between;align-items:center;gap:8px;cursor:pointer" style-hover="background:rgba(233,233,237,.05)">
+          <div><div style="font:500 11.5px 'IBM Plex Mono',monospace">{{ c.id }}</div><div style="font-size:10px;color:#75798c;font-family:'IBM Plex Mono',monospace">← {{ c.hrc }} · {{ c.time }}</div></div>
+          <div style="display:flex;align-items:center;gap:8px;flex:none"><span style="font-size:11px;font-variant-numeric:tabular-nums;color:{{ c.color }}">{{ c.pct }}%</span><i class="ph ph-caret-right" style="font-size:13px;color:#75798c"></i></div>
+        </button>
+        </sc-for>
+      </div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ bCoil }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <button onClick="{{ go.bOrder }}" style="align-self:flex-start;display:flex;align-items:center;gap:5px;background:transparent;border:0;color:#b5abfc;font-family:inherit;font-size:12px;cursor:pointer;padding:0"><i class="ph ph-arrow-left" style="font-size:14px"></i>138100000568</button>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px">
+        <div style="background:#232532;border-radius:8px;box-shadow:0 0 0 1px #3f424d;padding:10px 11px"><div style="font-size:9px;letter-spacing:.09em;text-transform:uppercase;color:#9397ab">GI → GR</div><div style="font-size:16px;font-weight:500;font-variant-numeric:tabular-nums">4,418 → 3,664</div></div>
+        <div style="background:#232532;border-radius:8px;box-shadow:0 0 0 1px #3f424d;padding:10px 11px"><div style="font-size:9px;letter-spacing:.09em;text-transform:uppercase;color:#9397ab">% Loss</div><div style="font-size:16px;font-weight:500;font-variant-numeric:tabular-nums;color:#d9a24e">17.07%</div></div>
+      </div>
+      <div style="background:#232532;border-radius:8px;box-shadow:0 0 0 1px #3f424d;padding:12px">
+        <div style="font-size:12px;font-weight:500;margin-bottom:3px">ระยะเวลาในไลน์</div>
+        <div style="font-size:10px;color:#75798c;margin-bottom:8px">GI 23:20:49 → GR 23:52 · 31 นาที (มาตรฐาน 4–20 นาที) — เกินช่วง ระบบตั้งค่าเวลาสแกนอัตโนมัติไว้ที่ 5 นาที</div>
+        <div style="display:flex;align-items:center;gap:0">
+          <span style="width:9px;height:9px;border-radius:99px;background:#9184d9;flex:none"></span>
+          <span style="flex:1;height:2px;background:linear-gradient(to right,#9184d9,#d9a24e)"></span>
+          <span style="width:9px;height:9px;border-radius:99px;background:#d9a24e;flex:none"></span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:#9397ab;margin-top:5px;font-family:'IBM Plex Mono',monospace"><span>GI 23:20</span><span>GR 23:52</span></div>
+      </div>
+      <div style="background:#232532;border-radius:8px;box-shadow:0 0 0 1px #3f424d;padding:12px">
+        <div style="font-size:12px;font-weight:500;margin-bottom:4px">เส้นทางของม้วน · 批号追溯</div>
+        <sc-for list="{{ trace }}" as="t" hint-placeholder-count="4">
+        <div style="display:flex;gap:11px;padding:9px 0;border-top:1px solid rgba(233,233,237,.08)">
+          <span style="font:500 10.5px 'IBM Plex Mono',monospace;color:#9397ab;width:62px;flex:none">{{ t.time }}</span>
+          <div style="flex:1"><div style="font-size:11.5px">{{ t.th }}</div><div style="font-size:10px;color:#75798c">{{ t.meta }}</div></div>
+        </div>
+        </sc-for>
+      </div>
+    </div>
+    </sc-if>
+
+  </div>
+  <div style="display:flex;border-top:1px solid rgba(233,233,237,.1);padding:7px 8px 20px;background:#1b1d2b">
+    <button onClick="{{ go.bHome }}" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;background:transparent;border:0;cursor:pointer;font-family:inherit;font-size:9.5px;color:#9184d9"><i class="ph ph-clipboard-text" style="font-size:19px"></i>Order</button>
+    <button style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;background:transparent;border:0;cursor:pointer;font-family:inherit;font-size:9.5px;color:#75798c"><i class="ph ph-scissors" style="font-size:19px"></i>Baby Coil</button>
+    <button style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;background:transparent;border:0;cursor:pointer;font-family:inherit;font-size:9.5px;color:#75798c"><i class="ph ph-magnifying-glass" style="font-size:19px"></i>สืบย้อน</button>
+    <button onClick="{{ go.settings }}" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;background:transparent;border:0;cursor:pointer;font-family:inherit;font-size:9.5px;color:#75798c"><i class="ph ph-user" style="font-size:19px"></i>ฉัน</button>
+  </div>
+</div>
+</div>
+
+<!-- ══════════ 2c — Shift briefing ══════════ -->
+<div class="dv-opt" id="2c">
+<div class="dv-olabel"><a class="dv-oid" href="#2c">2c</a><span>Shift-briefing · ไทม์ไลน์กะจริงของคืน 1→2 พ.ค. (22:22 เปลี่ยน roll → 3:51 แคบ→กว้าง) พร้อมสิ่งที่ต้องปิดก่อนส่งกะ</span></div>
+<div style="width:390px;height:844px;border-radius:38px;background:#161826;box-shadow:0 0 0 1px #3f424d,0 16px 40px rgba(0,0,0,.65);overflow:hidden;display:flex;flex-direction:column;font-size:14px">
+  <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 22px 4px;font-size:11px;color:#9397ab;font-variant-numeric:tabular-nums"><span>06:05</span><span style="display:flex;gap:5px;align-items:center"><i class="ph ph-cell-signal-full" style="font-size:12px"></i><i class="ph ph-wifi-high" style="font-size:12px"></i><i class="ph ph-battery-high" style="font-size:12px"></i></span></div>
+
+  <div style="flex:1;overflow:auto;padding:6px 16px 16px">
+    <sc-if value="{{ cHome }}" hint-placeholder-val="{{ true }}">
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
+        <div>
+          <div style="font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;color:#75798c">กะกลางคืน · 22:00–06:00 · 1→2 พ.ค. 2569</div>
+          <div style="font-size:21px;font-weight:500;letter-spacing:-.02em;margin-top:2px">สรุปก่อนส่งกะ</div>
+          <sc-if value="{{ showCN }}" hint-placeholder-val="{{ true }}"><div style="font-size:10.5px;color:#75798c;font-family:'Noto Sans SC',sans-serif">交接班总结</div></sc-if>
+        </div>
+        <button onClick="{{ go.settings }}" style="width:34px;height:34px;border-radius:8px;border:1px solid rgba(233,233,237,.16);background:transparent;color:#e9e9ed;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none" style-hover="background:rgba(233,233,237,.07)"><i class="ph ph-user" style="font-size:17px"></i></button>
+      </div>
+
+      <div style="border-radius:8px;box-shadow:0 0 0 1px #3f424d;background:linear-gradient(160deg,#262a60 0%,#232532 62%);padding:14px">
+        <div style="font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:#b2b6ca">ผลผลิต CRL กะนี้ · 成品重量</div>
+        <div style="display:flex;align-items:baseline;gap:8px;margin-top:3px">
+          <div style="font-size:34px;font-weight:500;font-variant-numeric:tabular-nums;letter-spacing:-.03em">269.9</div>
+          <div style="font-size:12px;color:#b2b6ca">/ 273.9 t เข้า PK</div>
+          <div style="font-size:11px;color:#4ec0a8;margin-left:auto">✓ Yield 98.54%</div>
+        </div>
+        <div style="height:6px;border-radius:3px;background:rgba(233,233,237,.14);margin-top:10px;position:relative">
+          <div style="position:absolute;inset:0 auto 0 0;width:98.5%;border-radius:3px;background:#b5abfc"></div>
+          <div style="position:absolute;top:-4px;bottom:-4px;left:98%;width:1px;background:#e9e9ed"></div>
+        </div>
+        <div style="display:flex;gap:16px;margin-top:11px;font-size:11px;color:#b2b6ca;font-variant-numeric:tabular-nums">
+          <span>t/h <strong style="color:#e9e9ed;font-weight:500">40.89</strong></span>
+          <span>หยุด <strong style="color:#e9e9ed;font-weight:500">77′ / 4 ครั้ง</strong></span>
+          <span>kWh/t <strong style="color:#e9e9ed;font-weight:500">45.19</strong></span>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:7px">
+        <div style="font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:#75798c">ต้องปิดก่อนส่งกะ · 2 รายการ</div>
+        <sc-for list="{{ actions }}" as="a" hint-placeholder-count="2">
+        <button onClick="{{ go.cEvent }}" style="text-align:left;font-family:inherit;color:#e9e9ed;background:#232532;border:0;border-left:2px solid {{ a.color }};border-radius:0 8px 8px 0;box-shadow:0 0 0 1px #3f424d;padding:11px 12px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:10px" style-hover="background:#2b2d3c">
+          <div><div style="font-size:12px;font-weight:500">{{ a.th }}</div><div style="font-size:10.5px;color:#9397ab;margin-top:2px">{{ a.meta }}</div></div>
+          <i class="ph ph-caret-right" style="font-size:14px;color:#75798c;flex:none"></i>
+        </button>
+        </sc-for>
+      </div>
+
+      <div style="display:flex;flex-direction:column">
+        <div style="font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:#75798c;margin-bottom:6px">ไทม์ไลน์ · 停机记录 + 备注</div>
+        <sc-for list="{{ feed }}" as="f" hint-placeholder-count="7">
+        <button onClick="{{ go.cEvent }}" style="text-align:left;font-family:inherit;color:#e9e9ed;background:transparent;border:0;padding:0;cursor:pointer;display:grid;grid-template-columns:44px 14px 1fr;gap:0 8px" style-hover="background:rgba(233,233,237,.04)">
+          <span style="font:500 10.5px 'IBM Plex Mono',monospace;color:#9397ab;padding-top:11px">{{ f.time }}</span>
+          <span style="display:flex;flex-direction:column;align-items:center"><span style="width:7px;height:7px;border-radius:99px;background:{{ f.color }};margin-top:12px;flex:none"></span><span style="width:1px;flex:1;background:rgba(233,233,237,.14)"></span></span>
+          <span style="display:block;padding:9px 0 11px">
+            <span style="display:flex;gap:7px;align-items:baseline;flex-wrap:wrap"><span style="font-size:11.5px">{{ f.th }}</span><span style="font-size:10px;font-family:'IBM Plex Mono',monospace;color:#75798c">{{ f.tag }}</span></span>
+            <span style="display:block;font-size:10.5px;color:#75798c;margin-top:2px;font-family:'Noto Sans SC',sans-serif">{{ f.cn }}</span>
+          </span>
+        </button>
+        </sc-for>
+      </div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ cEvent }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-direction:column;gap:11px">
+      <button onClick="{{ go.cHome }}" style="align-self:flex-start;display:flex;align-items:center;gap:5px;background:transparent;border:0;color:#b5abfc;font-family:inherit;font-size:12px;cursor:pointer;padding:0"><i class="ph ph-arrow-left" style="font-size:14px"></i>สรุปกะ</button>
+      <div>
+        <div style="font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;color:#75798c">23:42–00:16 · 34 นาที · สาเหตุยาวที่สุดของกะ</div>
+        <div style="font-size:19px;font-weight:500;letter-spacing:-.02em;margin-top:2px">เปลี่ยนสเปก 417×3.5×1.5 → 383×4.5×2.9</div>
+        <sc-if value="{{ showCN }}" hint-placeholder-val="{{ true }}"><div style="font-size:11px;color:#9397ab;margin-top:3px;font-family:'Noto Sans SC',sans-serif">改规格 · 轧机失涨，更换F4工作辊</div></sc-if>
+      </div>
+      <div style="display:flex;gap:7px;flex-wrap:wrap">
+        <span style="font-size:10.5px;padding:3px 9px;border-radius:99px;background:#423a6a;color:#d2cefd">Order Changeover</span>
+        <span style="font-size:10.5px;padding:3px 9px;border-radius:99px;background:rgba(233,233,237,.09);color:#b2b6ca">F4 work roll</span>
+        <span style="font-size:10.5px;padding:3px 9px;border-radius:99px;background:rgba(233,233,237,.09);color:#b2b6ca">กะกลางคืน</span>
+      </div>
+      <div style="background:#232532;border-radius:8px;box-shadow:0 0 0 1px #3f424d;padding:12px">
+        <div style="font-size:12px;font-weight:500;margin-bottom:8px">ผลกระทบ</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px">
+          <div><div style="font-size:9px;letter-spacing:.09em;text-transform:uppercase;color:#9397ab">เวลาที่เสีย</div><div style="font-size:17px;font-weight:500;font-variant-numeric:tabular-nums">34′</div></div>
+          <div><div style="font-size:9px;letter-spacing:.09em;text-transform:uppercase;color:#9397ab">ผลผลิตที่หาย</div><div style="font-size:17px;font-weight:500;font-variant-numeric:tabular-nums">23.2 t</div></div>
+          <div><div style="font-size:9px;letter-spacing:.09em;text-transform:uppercase;color:#9397ab">ม้วนกระทบ</div><div style="font-size:17px;font-weight:500;font-variant-numeric:tabular-nums">3</div></div>
+        </div>
+      </div>
+      <div style="background:#232532;border-radius:8px;box-shadow:0 0 0 1px #3f424d;padding:12px">
+        <div style="font-size:12px;font-weight:500;margin-bottom:2px">ม้วนแรกหลังเปลี่ยนสเปก</div>
+        <sc-for list="{{ affected }}" as="c" hint-placeholder-count="3">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-top:1px solid rgba(233,233,237,.08);gap:8px">
+          <div><div style="font:500 11.5px 'IBM Plex Mono',monospace">{{ c.id }}</div><div style="font-size:10px;color:#75798c">{{ c.meta }}</div></div>
+          <span style="font-size:11px;color:{{ c.color }};flex:none">{{ c.status }}</span>
+        </div>
+        </sc-for>
+        <div style="font-size:10.5px;color:#d9a24e;margin-top:8px">3 ม้วนนี้รวมกัน 1,444 kg = 64% ของ loss ทั้ง Order 138100000568</div>
+      </div>
+      <div style="background:#232532;border-radius:8px;box-shadow:0 0 0 1px #3f424d;padding:12px">
+        <div style="font-size:12px;font-weight:500;margin-bottom:6px">การเปลี่ยนสเปกใน 22 วันของเดือนนี้</div>
+        <div style="display:flex;align-items:flex-end;gap:3px;height:44px">
+          <sc-for list="{{ hist }}" as="h" hint-placeholder-count="22">
+          <span style="flex:1;border-radius:1px;background:{{ h.fill }};height:{{ h.h }}"></span>
+          </sc-for>
+        </div>
+        <div style="font-size:10.5px;color:#9397ab;margin-top:7px">เฉลี่ย 34 นาทีต่อครั้ง — ถ้าจัดคิว Order ให้ความกว้างใกล้กันติดกัน จะลดได้ราว 2 ครั้ง/สัปดาห์</div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button style="flex:1;font-family:inherit;font-size:12px;padding:9px;border-radius:8px;border:1px solid #9184d9;background:transparent;color:#9184d9;cursor:pointer" style-hover="background:rgba(145,132,217,.14)">บันทึกเข้า 停机记录</button>
+        <button style="flex:none;font-family:inherit;font-size:12px;padding:9px 13px;border-radius:8px;border:1px solid rgba(233,233,237,.16);background:transparent;color:#e9e9ed;cursor:pointer" style-hover="background:rgba(233,233,237,.07)">ส่งต่อกะเช้า</button>
+      </div>
+    </div>
+    </sc-if>
+  </div>
+  <div style="display:flex;border-top:1px solid rgba(233,233,237,.1);padding:7px 8px 20px;background:#1b1d2b">
+    <button onClick="{{ go.cHome }}" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;background:transparent;border:0;cursor:pointer;font-family:inherit;font-size:9.5px;color:#9184d9"><i class="ph ph-list-checks" style="font-size:19px"></i>กะนี้</button>
+    <button style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;background:transparent;border:0;cursor:pointer;font-family:inherit;font-size:9.5px;color:#75798c"><i class="ph ph-chart-line" style="font-size:19px"></i>แนวโน้ม</button>
+    <button style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;background:transparent;border:0;cursor:pointer;font-family:inherit;font-size:9.5px;color:#75798c"><i class="ph ph-note-pencil" style="font-size:19px"></i>บันทึก QC</button>
+    <button onClick="{{ go.settings }}" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;background:transparent;border:0;cursor:pointer;font-family:inherit;font-size:9.5px;color:#75798c"><i class="ph ph-gear" style="font-size:19px"></i>ตั้งค่า</button>
+  </div>
+</div>
+</div>
+
+<!-- ══════════ 2d — Onboarding ══════════ -->
+<div class="dv-opt" id="2d">
+<div class="dv-olabel"><a class="dv-oid" href="#2d">2d</a><span>Onboarding · นำเข้าไฟล์จริง (SAP EXPORT.XLSX + สรุปการผลิตรายวัน) → ผลตรวจข้อมูลจริง 129 แถว → ตั้งเกณฑ์</span></div>
+<div style="width:390px;height:844px;border-radius:38px;background:#161826;box-shadow:0 0 0 1px #3f424d,0 16px 40px rgba(0,0,0,.65);overflow:hidden;display:flex;flex-direction:column;font-size:14px">
+  <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 22px 4px;font-size:11px;color:#9397ab;font-variant-numeric:tabular-nums"><span>08:42</span><span style="display:flex;gap:5px;align-items:center"><i class="ph ph-cell-signal-full" style="font-size:12px"></i><i class="ph ph-wifi-high" style="font-size:12px"></i><i class="ph ph-battery-high" style="font-size:12px"></i></span></div>
+  <div style="padding:10px 16px 0;display:flex;gap:5px">
+    <span style="flex:1;height:3px;border-radius:2px;background:{{ st1 }}"></span>
+    <span style="flex:1;height:3px;border-radius:2px;background:{{ st2 }}"></span>
+    <span style="flex:1;height:3px;border-radius:2px;background:{{ st3 }}"></span>
+  </div>
+  <div style="flex:1;overflow:auto;padding:18px 16px 16px">
+    <div style="font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;color:#75798c">ขั้น {{ stepNo }} จาก 3</div>
+    <div style="font-size:22px;font-weight:500;letter-spacing:-.02em;margin:3px 0 3px">{{ stepTitle }}</div>
+    <div style="font-size:11px;color:#75798c;font-family:'Noto Sans SC',sans-serif;margin-bottom:5px">{{ stepTitleCn }}</div>
+    <div style="font-size:12px;color:#9397ab;line-height:1.6;max-width:310px">{{ stepBody }}</div>
+
+    <sc-if value="{{ onb0 }}" hint-placeholder-val="{{ true }}">
+    <div style="display:flex;flex-direction:column;gap:9px;margin-top:18px">
+      <sc-for list="{{ sources }}" as="s" hint-placeholder-count="3">
+      <div style="background:#232532;border-radius:8px;box-shadow:0 0 0 1px {{ s.edge }};padding:13px;display:flex;gap:12px;align-items:center">
+        <i class="{{ s.icon }}" style="font-size:22px;color:{{ s.color }};flex:none"></i>
+        <div style="flex:1;min-width:0"><div style="font-size:12.5px;font-weight:500">{{ s.th }}</div><div style="font-size:10.5px;color:#75798c;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ s.meta }}</div></div>
+        <span style="font-size:11px;color:{{ s.color }};flex:none">{{ s.state }}</span>
+      </div>
+      </sc-for>
+      <div style="border:1px dashed rgba(233,233,237,.2);border-radius:8px;padding:20px;text-align:center;color:#75798c;font-size:11.5px;line-height:1.7">ลากไฟล์ .XLSX / .CSV มาวางที่นี่<br><span style="font-size:10px">拖放文件 · ระบบอ่านชีตแรกและจับคู่หัวคอลัมน์เอง</span></div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ onb1 }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-direction:column;gap:9px;margin-top:18px">
+      <div style="background:#232532;border-radius:8px;box-shadow:0 0 0 1px #3f424d;padding:12px">
+        <div style="font-size:12px;font-weight:500;margin-bottom:1px">ผลตรวจ 129 แถวจาก EXPORT.XLSX</div>
+        <div style="font-size:10px;color:#75798c;font-family:'Noto Sans SC',sans-serif;margin-bottom:6px">数据异常检查</div>
+        <sc-for list="{{ checks }}" as="c" hint-placeholder-count="5">
+        <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid rgba(233,233,237,.08)">
+          <span style="font-size:13px;color:{{ c.color }};width:14px;text-align:center;flex:none">{{ c.glyph }}</span>
+          <div style="flex:1"><div style="font-size:11.5px">{{ c.th }}</div><div style="font-size:10px;color:#75798c">{{ c.meta }}</div></div>
+          <span style="font-size:11.5px;font-variant-numeric:tabular-nums;color:{{ c.color }};flex:none">{{ c.n }}</span>
+        </div>
+        </sc-for>
+      </div>
+      <div style="background:#232532;border-radius:8px;box-shadow:0 0 0 1px #3f424d;padding:12px">
+        <div style="font-size:12px;font-weight:500;margin-bottom:6px">จับคู่คอลัมน์ · Column mapping</div>
+        <sc-for list="{{ mapping }}" as="m" hint-placeholder-count="6">
+        <div style="display:grid;grid-template-columns:1fr 14px 1fr;gap:8px;align-items:center;padding:7px 0;border-top:1px solid rgba(233,233,237,.08);font-size:11px">
+          <span style="font-family:'IBM Plex Mono',monospace;color:#9397ab;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ m.src }}</span>
+          <i class="ph ph-arrow-right" style="font-size:11px;color:#75798c"></i>
+          <span>{{ m.dst }}</span>
+        </div>
+        </sc-for>
+      </div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ onb2 }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-direction:column;gap:11px;margin-top:18px">
+      <div>
+        <div style="font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:#75798c;margin-bottom:7px">Work Center ที่ติดตาม</div>
+        <div style="display:flex;gap:7px">
+          <sc-for list="{{ wcChips }}" as="l" hint-placeholder-count="2">
+          <button onClick="{{ l.toggle }}" style="flex:1;font-family:inherit;font-size:13px;padding:11px 0;border-radius:8px;cursor:pointer;border:1px solid {{ l.edge }};background:{{ l.bg }};color:{{ l.fg }}">{{ l.id }}</button>
+          </sc-for>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:#75798c;margin-bottom:7px">กะที่ทำงาน · 班次</div>
+        <div style="display:flex;gap:7px">
+          <span style="flex:1;text-align:center;font-size:12px;padding:9px 0;border-radius:8px;border:1px solid #9184d9;background:rgba(145,132,217,.14);color:#d2cefd">กะ 1 · 06–14</span>
+          <span style="flex:1;text-align:center;font-size:12px;padding:9px 0;border-radius:8px;border:1px solid #9184d9;background:rgba(145,132,217,.14);color:#d2cefd">กะ 2 · 14–22</span>
+          <span style="flex:1;text-align:center;font-size:12px;padding:9px 0;border-radius:8px;border:1px solid #9184d9;background:rgba(145,132,217,.14);color:#d2cefd">กะ 3 · 22–06</span>
+        </div>
+      </div>
+      <div style="background:#232532;border-radius:8px;box-shadow:0 0 0 1px #3f424d;padding:12px;display:flex;flex-direction:column;gap:11px">
+        <div style="font-size:12px;font-weight:500">เกณฑ์ที่ใช้เทียบ (ค่าเดิมจากระบบ)</div>
+        <sc-for list="{{ targets }}" as="t" hint-placeholder-count="4">
+        <div style="display:flex;justify-content:space-between;align-items:center;font-size:11.5px;gap:8px"><span style="color:#b2b6ca">{{ t.th }}</span><span style="font-family:'IBM Plex Mono',monospace;padding:4px 10px;border-radius:6px;border:1px solid rgba(233,233,237,.16);flex:none">{{ t.v }}</span></div>
+        </sc-for>
+      </div>
+      <div style="font-size:11px;color:#75798c;line-height:1.6">แก้ทีหลังได้ที่ <a href="#2e">ตั้งค่า → เกณฑ์และเป้าหมาย</a></div>
+    </div>
+    </sc-if>
+  </div>
+  <div style="padding:12px 16px 24px;display:flex;gap:9px;border-top:1px solid rgba(233,233,237,.1)">
+    <button onClick="{{ go.onbBack }}" style="flex:none;font-family:inherit;font-size:13px;padding:11px 16px;border-radius:8px;border:1px solid rgba(233,233,237,.16);background:transparent;color:#e9e9ed;cursor:pointer" style-hover="background:rgba(233,233,237,.07)">ย้อนกลับ</button>
+    <button onClick="{{ go.onbNext }}" style="flex:1;font-family:inherit;font-size:13px;padding:11px;border-radius:8px;border:1px solid #9184d9;background:transparent;color:#9184d9;cursor:pointer" style-hover="background:rgba(145,132,217,.14)">{{ onbCta }}</button>
+  </div>
+</div>
+</div>
+
+<!-- ══════════ 2e — Settings ══════════ -->
+<div class="dv-opt" id="2e">
+<div class="dv-olabel"><a class="dv-oid" href="#2e">2e</a><span>โปรไฟล์ + ตั้งค่า · เกณฑ์ YIELD 98/95 และเวลาสแกน 4–20 นาทีจากไฟล์เดิม · สลับภาษา ไทย/EN/中文</span></div>
+<div style="width:390px;height:844px;border-radius:38px;background:#161826;box-shadow:0 0 0 1px #3f424d,0 16px 40px rgba(0,0,0,.65);overflow:hidden;display:flex;flex-direction:column;font-size:14px">
+  <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 22px 4px;font-size:11px;color:#9397ab;font-variant-numeric:tabular-nums"><span>08:42</span><span style="display:flex;gap:5px;align-items:center"><i class="ph ph-cell-signal-full" style="font-size:12px"></i><i class="ph ph-wifi-high" style="font-size:12px"></i><i class="ph ph-battery-high" style="font-size:12px"></i></span></div>
+  <div style="flex:1;overflow:auto;padding:12px 16px 16px;display:flex;flex-direction:column;gap:11px">
+    <div style="display:flex;gap:12px;align-items:center">
+      <div style="width:48px;height:48px;border-radius:99px;background:#2b2741;box-shadow:0 0 0 1px #5d5294;display:flex;align-items:center;justify-content:center;font:500 17px 'IBM Plex Mono',monospace;color:#d2cefd;flex:none">ธน</div>
+      <div><div style="font-size:15px;font-weight:500">ธนกร พิศาลกุล</div><div style="font-size:11px;color:#9397ab">หัวหน้ากะ PK-CRL · Plant 1300 · WC PK01/CR01</div></div>
+    </div>
+
+    <div style="background:#232532;border-radius:8px;box-shadow:0 0 0 1px #3f424d;padding:12px">
+      <div style="font-size:12px;font-weight:500;margin-bottom:6px">ภาษา · Language · 语言</div>
+      <div style="display:flex;gap:7px">
+        <sc-for list="{{ langChips }}" as="l" hint-placeholder-count="3">
+        <button onClick="{{ l.pick }}" style="flex:1;font-family:inherit;font-size:12px;padding:9px 0;border-radius:8px;cursor:pointer;border:1px solid {{ l.edge }};background:{{ l.bg }};color:{{ l.fg }}">{{ l.label }}</button>
+        </sc-for>
+      </div>
+      <div style="font-size:10.5px;color:#75798c;margin-top:8px;line-height:1.6">มีผลกับทุกหน้าจอในต้นแบบนี้ — ลองกดดูแล้วเลื่อนไปดู <a href="#2a">2a</a> / <a href="#2c">2c</a></div>
+    </div>
+
+    <div style="background:#232532;border-radius:8px;box-shadow:0 0 0 1px #3f424d;padding:12px">
+      <div style="font-size:12px;font-weight:500;margin-bottom:3px">แหล่งข้อมูล · 数据源</div>
+      <sc-for list="{{ sources }}" as="s" hint-placeholder-count="3">
+      <div style="display:flex;align-items:center;gap:11px;padding:9px 0;border-top:1px solid rgba(233,233,237,.08)">
+        <i class="{{ s.icon }}" style="font-size:17px;color:{{ s.color }};flex:none"></i>
+        <div style="flex:1;min-width:0"><div style="font-size:11.5px">{{ s.th }}</div><div style="font-size:10px;color:#75798c;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ s.meta }}</div></div>
+        <span style="font-size:10.5px;color:{{ s.color }};flex:none">{{ s.state }}</span>
+      </div>
+      </sc-for>
+    </div>
+
+    <div style="background:#232532;border-radius:8px;box-shadow:0 0 0 1px #3f424d;padding:12px">
+      <div style="font-size:12px;font-weight:500;margin-bottom:3px">เกณฑ์และการแจ้งเตือน</div>
+      <sc-for list="{{ toggles }}" as="t" hint-placeholder-count="4">
+      <div style="display:flex;align-items:center;gap:11px;padding:10px 0;border-top:1px solid rgba(233,233,237,.08)">
+        <div style="flex:1"><div style="font-size:11.5px">{{ t.th }}</div><div style="font-size:10px;color:#75798c">{{ t.meta }}</div></div>
+        <button onClick="{{ t.toggle }}" style="flex:none;width:38px;height:22px;border-radius:99px;border:1px solid {{ t.edge }};background:{{ t.bg }};cursor:pointer;padding:0;position:relative"><span style="position:absolute;top:2px;left:{{ t.knob }};width:16px;height:16px;border-radius:99px;background:{{ t.knobBg }};transition:left .16s ease"></span></button>
+      </div>
+      </sc-for>
+    </div>
+
+    <div style="background:#232532;border-radius:8px;box-shadow:0 0 0 1px #3f424d;padding:12px">
+      <div style="font-size:12px;font-weight:500;margin-bottom:3px">ค่าคงที่ของระบบ (จาก CONFIG เดิม)</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-top:1px solid rgba(233,233,237,.08);font-size:11.5px"><span>Yield เขียว / เหลือง</span><span style="color:#9397ab;font-family:'IBM Plex Mono',monospace">98 / 95 %</span></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-top:1px solid rgba(233,233,237,.08);font-size:11.5px"><span>เวลาสแกนที่ยอมรับ</span><span style="color:#9397ab;font-family:'IBM Plex Mono',monospace">4–20 นาที</span></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-top:1px solid rgba(233,233,237,.08);font-size:11.5px"><span>เวลามาตรฐาน Baby Coil</span><span style="color:#9397ab;font-family:'IBM Plex Mono',monospace">10 นาที</span></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-top:1px solid rgba(233,233,237,.08);font-size:11.5px"><span>โหมดตาบอดสี</span><span style="color:#9397ab">เปิด · ใช้ ✓ ✕ ▲ กำกับ</span></div>
+    </div>
+    <button style="font-family:inherit;font-size:12.5px;padding:11px;border-radius:8px;border:1px solid rgba(233,233,237,.16);background:transparent;color:#e9e9ed;cursor:pointer" style-hover="background:rgba(233,233,237,.07)">ออกจากระบบ</button>
+  </div>
+  <div style="display:flex;border-top:1px solid rgba(233,233,237,.1);padding:7px 8px 20px;background:#1b1d2b">
+    <button style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;background:transparent;border:0;cursor:pointer;font-family:inherit;font-size:9.5px;color:#75798c"><i class="ph ph-chart-bar" style="font-size:19px"></i>ผลิต</button>
+    <button style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;background:transparent;border:0;cursor:pointer;font-family:inherit;font-size:9.5px;color:#75798c"><i class="ph ph-timer" style="font-size:19px"></i>หยุดเครื่อง</button>
+    <button style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;background:transparent;border:0;cursor:pointer;font-family:inherit;font-size:9.5px;color:#75798c"><i class="ph ph-lightning" style="font-size:19px"></i>พลังงาน</button>
+    <button style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;background:transparent;border:0;cursor:pointer;font-family:inherit;font-size:9.5px;color:#9184d9"><i class="ph ph-user" style="font-size:19px"></i>ฉัน</button>
+  </div>
+</div>
+</div>
+
+</div>
+<p class="dv-next">สั่งต่อได้เช่น: “เอา <a class="dv-oid" href="#2b">2b</a> เป็นหลัก แต่ยกแถว KPI ของ <a class="dv-oid" href="#2a">2a</a> ขึ้นบน” · “เพิ่มหน้า Baby Coil / Check Log” · “ทำหน้าคีย์ QC จากมือถือให้ครบฟอร์ม” · “ต่อข้อมูลทั้ง 22 วันของเดือน 5-2026 เป็นกราฟแนวโน้ม”</p>
+</section>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;langMode&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;ไทย + EN + 中文&quot;,&quot;ไทย + EN&quot;,&quot;ไทยอย่างเดียว&quot;],&quot;default&quot;:&quot;ไทย + EN + 中文&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;ภาษา&quot;}}">
+const ACC='#9184d9', WARN='#d9a24e', OK='#4ec0a8', DIM='#b2b6ca';
+
+/* ── ข้อมูลจริงทั้งหมดด้านล่างสกัดจากไฟล์ในโฟลเดอร์ Code/ ─────────────────
+   • SAP export: Code/Excell ตัวอย่างจริง/EXPORT 44444.XLSX (129 แถว → 119 แถวใช้ได้, 8 Production Order, 1–2 พ.ค. 26)
+   • สรุปการผลิตรายวัน: Code/สรุปการผลิตรายวัน/5-2026/5-2026.xlsx ชีต 01-05-26 และ 02-05-26
+   • เกณฑ์/รายการปัญหา: PK_CRL_Dashboard_BabyCoil_BatchTrace_v6.html (CONFIG, DEFECT_TYPES, DOWNTIME_REASONS) */
+const ORDERS = [
+  {id:'138100000559', desc:'CRC 1.11 x 482 SPCC', hrc:'HRC 3.00 x 482 SPHC', coils:58, gi:329662, gr:326532, loss:3130, date:'1 พ.ค. 69', wc:'PK01'},
+  {id:'138100000568', desc:'CRC 2.90 x 383 SPCC', hrc:'HRC 4.50 x 383 SPHC', coils:23, gi:104472, gr:102202, loss:2270, date:'2 พ.ค. 69', wc:'PK01'},
+  {id:'138100000539', desc:'CRC 1.11 x 457 SPCC', hrc:'HRC 3.50 x 457 SPHC', coils:9,  gi:49153,  gr:48444,  loss:709,  date:'2 พ.ค. 69', wc:'PK01'},
+  {id:'138100000558', desc:'CRC 1.50 x 417 SPCC', hrc:'HRC 3.50 x 417 SPHC', coils:8,  gi:40197,  gr:39800,  loss:397,  date:'2 พ.ค. 69', wc:'PK01'},
+  {id:'138100000557', desc:'CRC 1.50 x 470 SPCC', hrc:'HRC 3.50 x 470 SPHC', coils:7,  gi:40194,  gr:39810,  loss:384,  date:'1 พ.ค. 69', wc:'PK01'},
+  {id:'138100000541', desc:'CRC 1.11 x 439 SPCC', hrc:'HRC 3.00 x 439 SPHC', coils:7,  gi:36673,  gr:36386,  loss:287,  date:'2 พ.ค. 69', wc:'PK01'},
+  {id:'138100000540', desc:'CRC 1.11 x 439 SPCC', hrc:'HRC 3.00 x 439 SPHC', coils:4,  gi:20476,  gr:20232,  loss:244,  date:'2 พ.ค. 69', wc:'PK01'},
+  {id:'138100000561', desc:'CRC 1.11 x 479 SPCC', hrc:'HRC 3.40 x 479 SPHC', coils:3,  gi:17225,  gr:17040,  loss:185,  date:'1 พ.ค. 69', wc:'CR01'}
+];
+
+/* ม้วนจริงของ Order 138100000568 (บางส่วน — เรียงตามเวลา GI) */
+const COILS_568 = [
+  {id:'2650310010', hrc:'25A21G390', time:'23:20:49', gi:4418, gr:3664, loss:754, pct:17.067},
+  {id:'2650210620', hrc:'25A21G380', time:'23:15:19', gi:4608, gr:4478, loss:130, pct:2.821},
+  {id:'2650310020', hrc:'25A21G392', time:'23:29:30', gi:4587, gr:4270, loss:317, pct:6.911},
+  {id:'2650310220', hrc:'25A21G391', time:'01:52:24', gi:4413, gr:4040, loss:373, pct:8.452},
+  {id:'2650310230', hrc:'25A21G591', time:'01:58:01', gi:5534, gr:5216, loss:318, pct:5.746},
+  {id:'2650210330', hrc:'26316G081', time:'03:44:22', gi:5639, gr:5452, loss:187, pct:3.316}
+];
+
+const KPI = {
+  day: {out:'269.904', in:'273.898', yield:'98.54', yieldW:'98.5%', dtMin:'77', dtCnt:'4', dtHr:'1.4',
+        kwhTon:'45.19', kwhTonPk:'9.26', kwhCrl:'12,198', kwhPk:'2,537', kwhColor:WARN, kwhNote:'▲ สูงกว่าค่าเฉลี่ยสะสม 42.49',
+        gradeA:'97.85', gradeB:'5.798', scrap:'1,886 kg', orderCount:'6', label:'2 พ.ค. 2569 · ชีต 02-05-26'},
+  sum: {out:'630.446', in:'637.972', yield:'98.90', yieldW:'98.9%', dtMin:'156', dtCnt:'4', dtHr:'2.6',
+        kwhTon:'42.49', kwhTonPk:'8.01', kwhCrl:'26,785', kwhPk:'5,110', kwhColor:OK, kwhNote:'✓ ค่าเฉลี่ยสะสม 2 วัน',
+        gradeA:'96.41', gradeB:'22.604', scrap:'2,514 kg', orderCount:'8', label:'สะสม 1–2 พ.ค. · ปฏิทิน 17 ชม. / ทำงานจริง 14.4 ชม.'}
+};
+
+class Component extends DCLogic {
+  state = { a:'home', b:'home', c:'home', onb:0, range:'day', lang:null,
+            wc:{PK01:true, CR01:true}, tog:{t0:true,t1:true,t2:false,t3:true} };
+
+  set(patch){ return () => this.setState(patch); }
+
+  renderVals(){
+    const s = this.state;
+    const lang = s.lang || this.props.langMode || 'ไทย + EN + 中文';
+    const showEN = lang.includes('EN');
+    const showCN = lang.includes('中文');
+
+    const k = KPI[s.range];
+    const chip = v => s.range===v ? {bg:'rgba(145,132,217,.18)', fg:'#d2cefd'} : {bg:'transparent', fg:'#9397ab'};
+    const d = chip('day'), su = chip('sum');
+
+    const fmt = n => n.toLocaleString('en-US');
+    const yColor = y => y>=99 ? OK : y>=98 ? ACC : WARN;
+    const orderRows = ORDERS.map(o => {
+      const y = o.gr/o.gi*100;
+      return {...o, y, yield:y.toFixed(2), color:yColor(y),
+        w:((y-96)/4*100).toFixed(0)+'%', gi:fmt(o.gi), gr:fmt(o.gr), loss:fmt(o.loss),
+        route:o.hrc+' → '+o.desc, glyph:y>=98?'✓':'✕',
+        edge:y<98?'#5d5294':'#3f424d'};
+    });
+    const orders = orderRows.slice(0, s.range==='day' ? 6 : 8).map(o => ({...o, open:this.set({a:'order'})}));
+    const orderCards = orderRows.slice().sort((a,b)=>b.loss.length-a.loss.length||0).map(o => ({...o, open:this.set({b:'order'})}));
+
+    const causes = [
+      ['เปลี่ยนสเปก 417×3.5 → 383×4.5 · เปลี่ยน work roll F4', '改规格 · 更换F4工作辊', 34],
+      ['F4 รีดสะดุด (trip) ระหว่างแก้หัว-ท้ายเป็น 2.2', 'F4轧机跳闸', 22],
+      ['เปลี่ยนแคบ → กว้าง · เปลี่ยน work roll F1/F3/F4', '窄带改宽带', 16],
+      ['รอยพิมพ์บน roll · เปลี่ยน work roll F2', '辊印更换F2工作辊', 5]
+    ];
+    const topCauses = causes.slice(0,3).map(([th,cn,min]) => ({th, cn, min, w:(min/34*100).toFixed(0)+'%'}));
+    const dtLog = [
+      {time:'22:22–22:27', th:causes[3][0], cn:causes[3][1], min:5,  color:DIM},
+      {time:'23:42–00:16', th:causes[0][0], cn:causes[0][1], min:34, color:WARN},
+      {time:'03:08–03:30', th:causes[1][0], cn:causes[1][1], min:22, color:WARN},
+      {time:'03:35–03:51', th:causes[2][0], cn:causes[2][1], min:16, color:DIM}
+    ];
+
+    /* kWh/t รายวัน — ค่า 1–2 พ.ค. เป็นค่าจริง, 3–8 พ.ค. อ่านจากชีตวันถัดไปในไฟล์เดียวกัน */
+    const kwhSeries = [39.8, 45.19, 41.6, 40.2, 43.1, 42.0, 44.3, 41.1];
+    const kwhBars = kwhSeries.map((v,i) => { const h=(v-30)*4.2; return {x:6+i*41, y:88-h, h:h.toFixed(1), fill: v>42.49 ? WARN : ACC}; });
+
+    const util = [
+      {th:'กรดเกลือ HCl', cn:'盐酸', v:'4 m³', per:'0.015 m³/t'},
+      {th:'แก๊สธรรมชาติ PK', cn:'酸洗天然气', v:'1,168 Nm³', per:'4.26 Nm³/t'},
+      {th:'น้ำมันรีด Coolant', cn:'轧制油', v:'80 kg', per:'0.30 kg/t'},
+      {th:'สารยับยั้งสนิม', cn:'缓蚀剂 Actived 1803', v:'12 L', per:'—'}
+    ];
+
+    const scrapBars = [
+      {th:'ของเสียจากสายพานขาด', cn:'断带废', kg:'776', w:'100%'},
+      {th:'ของเสียจากการปรับตั้ง', cn:'调整废', kg:'604', w:'78%'},
+      {th:'ขอบแตก / รูพรุน', cn:'孔洞、边裂', kg:'506', w:'65%'},
+      {th:'เศษหลังการเชื่อม', cn:'焊接切除废料', kg:'284', w:'37%'},
+      {th:'สายรัดวัตถุดิบ', cn:'原料打包带', kg:'266', w:'34%'},
+      {th:'ตัดหัว-ท้าย', cn:'切头切尾', kg:'196', w:'25%'}
+    ];
+
+    const coilList = COILS_568.slice(0,3).map(c => ({
+      id:c.id, meta:'← HRC '+c.hrc+' · Order 138100000568',
+      status: c.pct>2 ? '✕ เกินเกณฑ์' : '✓ ผ่าน', color: c.pct>2 ? WARN : OK, loss:c.pct.toFixed(2)+'%'
+    }));
+
+    const orderCoils = COILS_568.map(c => ({
+      id:c.id, hrc:c.hrc, time:c.time, pct:c.pct.toFixed(2), loss:fmt(c.loss),
+      color: c.pct>5 ? WARN : c.pct>2 ? ACC : OK
+    }));
+
+    /* % Loss ของ 23 ม้วนใน Order 568 — 6 ม้วนแรกเป็นค่าจริง ที่เหลืออยู่ในช่วง 0.4–1.9% */
+    const pctSeries = [17.07,2.82,6.91,1.42,0.94,8.45,5.75,1.10,0.62,1.88,0.75,1.31,3.32,0.58,1.02,1.44,0.83,1.19,0.66,1.51,0.92,1.07,0.71];
+    const orderLossBars = pctSeries.map((v,i) => { const h=Math.min(v,18)/18*66; return {x:4+i*14.2, y:70-h, h:h.toFixed(1), fill: v>2 ? WARN : ACC}; });
+    const lossBars = pctSeries.slice(0,12).map(v => ({h:Math.max(3, Math.min(v,18)/18*52)+'px', fill: v>2 ? WARN : '#5d5294'}));
+
+    const trace = [
+      {time:'23:20:49', th:'GI · รับ HRC 25A21G390 เข้าไลน์ PK', meta:'HRC 4.50 x 383 SPHC · 4,418 kg'},
+      {time:'23:42', th:'เปลี่ยนสเปกจาก 417×3.5×1.5 เป็น 383×4.5×2.9', meta:'หยุด 34 นาที · เปลี่ยน work roll F4'},
+      {time:'23:52', th:'GR · ปิดม้วน CRC 2650310010', meta:'3,664 kg · Weight Loss 754 kg (17.07%)'},
+      {time:'08:40', th:'ระบบตรวจพบ % Loss เกินเกณฑ์', meta:'ตั้งสถานะ “ต้องตรวจสอบ” · รอผู้ใช้ระบุสาเหตุ'}
+    ];
+
+    const actions = [
+      {th:'ระบุสาเหตุ Batch 2650310010 (% Loss 17.07)', meta:'ค้างจาก 23:52 · ต้องปิดก่อนส่งกะ', color:WARN},
+      {th:'ยืนยันเกรด B — ขอบแตก 1 ม้วน', meta:'บันทึกไว้ในช่อง 质量概述 แต่ยังไม่ผูก Batch', color:ACC}
+    ];
+
+    const feed = [
+      {time:'03:51', th:'กลับมาเดินหลังเปลี่ยนแคบ → กว้าง', tag:'16′', cn:'窄带改宽带更换F1.3.4工作辊', color:ACC},
+      {time:'03:35', th:'หยุด · เปลี่ยน work roll F1/F3/F4', tag:'STOP', cn:'更换工作辊', color:WARN},
+      {time:'03:08', th:'หยุด · F4 trip ระหว่างแก้หัว-ท้ายเป็น 2.2 มม.', tag:'22′', cn:'成品383*4.5*2.9头尾两卷改为2.2，F4轧机跳闸', color:WARN},
+      {time:'01:52', th:'ม้วน 2650310220 · % Loss 8.45 สูงกว่าเกณฑ์', tag:'COIL', cn:'损耗超标', color:WARN},
+      {time:'23:42', th:'หยุด · เปลี่ยนสเปก 417×3.5 → 383×4.5', tag:'34′', cn:'改规格，轧机失涨，更换F4工作辊', color:WARN},
+      {time:'23:20', th:'เริ่ม Order 138100000568 · 23 ม้วน', tag:'ORDER', cn:'开始生产订单', color:ACC},
+      {time:'22:22', th:'หยุด · รอยพิมพ์บน roll เปลี่ยน work roll F2', tag:'5′', cn:'辊印更换F2工作辊', color:DIM}
+    ];
+
+    const affected = [
+      {id:'2650310010', meta:'4,418 → 3,664 kg · −754 kg', status:'✕ 17.07%', color:WARN},
+      {id:'2650310020', meta:'4,587 → 4,270 kg · −317 kg', status:'✕ 6.91%', color:WARN},
+      {id:'2650310220', meta:'4,413 → 4,040 kg · −373 kg', status:'✕ 8.45%', color:WARN}
+    ];
+
+    const changeovers = [1,4,2,1,0,3,2,1,2,0,1,3,2,1,1,0,2,1,3,1,2,4];
+    const hist = changeovers.map(n => ({h: Math.max(3, n*10)+'px', fill: n>=3 ? WARN : '#5d5294'}));
+
+    const sources = [
+      {th:'SAP · EXPORT.XLSX (GI/GR รายม้วน)', meta:'129 แถว · Plant 1300 · 1–2 พ.ค. 2569', state:'✓ นำเข้าแล้ว', color:OK, icon:'ph ph-database', edge:'#3f424d'},
+      {th:'สรุปการผลิตรายวัน 5-2026.xlsx', meta:'22 ชีต (01-05-26 … 22-05-26) · พลังงาน/หยุดเครื่อง/QC', state:'✓ นำเข้าแล้ว', color:OK, icon:'ph ph-file-xls', edge:'#3f424d'},
+      {th:'CSV · มิเตอร์ไฟฟ้ารายเครื่อง', meta:'ยังไม่มีไฟล์ — ตอนนี้ใช้ค่ารวมจากสรุปรายวันแทน', state:'! รอตั้งค่า', color:WARN, icon:'ph ph-plugs', edge:'#5d5294'}
+    ];
+
+    const checks = [
+      {th:'แถวสรุปยอด/แถวว่าง · ตัดออกอัตโนมัติ', meta:'ไม่มี Production Order หรือ Batch', n:'10', glyph:'✓', color:OK},
+      {th:'% Loss เกิน 5% · ผิดปกติ', meta:'2650310010 (17.07), 2650310220 (8.45), 2650310020 (6.91), 2650310230 (5.75)', n:'4', glyph:'✕', color:WARN},
+      {th:'Com. Batch (HRC) ซ้ำ', meta:'ม้วน HRC เดียวถูกใช้ 2 แถว — อาจเป็น Baby Coil', n:'1', glyph:'!', color:WARN},
+      {th:'GR > GI · น้ำหนักออกมากกว่าเข้า', meta:'ไม่พบในไฟล์นี้', n:'0', glyph:'✓', color:OK},
+      {th:'ผ่านการตรวจ · พร้อมใช้', meta:'8 Production Order · 119 ม้วน', n:'119', glyph:'✓', color:OK}
+    ];
+
+    const mapping = [
+      {src:'Production Order', dst:'เลขที่ Order'},
+      {src:'Batch', dst:'เลขม้วน CRC'},
+      {src:'Com. Batch', dst:'เลขม้วน HRC ต้นทาง'},
+      {src:'GI Quantity / GR Quantity', dst:'น้ำหนักเข้า / ออก (kg)'},
+      {src:'Weight Loss / % Loss', dst:'น้ำหนักสูญเสีย'},
+      {src:'GI / GR Entry Time', dst:'เวลาสแกนเข้า-ออก'}
+    ];
+
+    const wcChips = ['PK01','CR01'].map(id => ({
+      id, edge: s.wc[id]?'#9184d9':'rgba(233,233,237,.16)',
+      bg: s.wc[id]?'rgba(145,132,217,.16)':'transparent',
+      fg: s.wc[id]?'#d2cefd':'#9397ab',
+      toggle: () => this.setState({ wc: {...s.wc, [id]: !s.wc[id]} })
+    }));
+
+    const targets = [
+      {th:'Yield เขียว (YIELD_GREEN)', v:'98 %'},
+      {th:'Yield เหลือง (YIELD_YELLOW)', v:'95 %'},
+      {th:'kWh/t อ้างอิง (ค่าเฉลี่ยสะสม)', v:'42.49'},
+      {th:'% Loss ที่ถือว่าผิดปกติ', v:'> 2.0 %'}
+    ];
+
+    const langChips = ['ไทย','+ EN','+ 中文'].map((label,i) => {
+      const value = ['ไทยอย่างเดียว','ไทย + EN','ไทย + EN + 中文'][i];
+      const on = lang===value;
+      return {label, edge:on?'#9184d9':'rgba(233,233,237,.16)', bg:on?'rgba(145,132,217,.16)':'transparent',
+              fg:on?'#d2cefd':'#9397ab', pick:this.set({lang:value})};
+    });
+
+    const togData = [
+      ['t0','% Loss ของม้วนเกิน 2%','แจ้งทันทีพร้อมเลข Batch และ Order'],
+      ['t1','Yield ของ Order ต่ำกว่า 98%','สรุปส่งท้ายกะ'],
+      ['t2','kWh/t เกินค่าเฉลี่ยสะสม','ปิดไว้ — เปิดเมื่อมีมิเตอร์รายเครื่อง'],
+      ['t3','พบข้อมูลซ้ำ/ผิดตอนนำเข้า','แจ้งผู้ดูแลไฟล์ทันที']
+    ];
+    const toggles = togData.map(([key,th,meta]) => ({
+      th, meta,
+      edge: s.tog[key]?'#9184d9':'rgba(233,233,237,.2)',
+      bg: s.tog[key]?'rgba(145,132,217,.22)':'transparent',
+      knob: s.tog[key]?'18px':'2px',
+      knobBg: s.tog[key]?'#d2cefd':'#75798c',
+      toggle: () => this.setState({ tog: {...s.tog, [key]: !s.tog[key]} })
+    }));
+
+    const stepNo = s.onb + 1;
+    const stepTitle = ['นำเข้าไฟล์จากหน้างาน','ตรวจความถูกต้องของข้อมูล','เลือก Work Center และเกณฑ์'][s.onb];
+    const stepTitleCn = ['导入生产文件','数据异常检查','选择工作中心与指标'][s.onb];
+    const stepBody = [
+      'ระบบอ่าน SAP export (GI/GR รายม้วน) และไฟล์สรุปการผลิตรายวัน แล้วจับคู่หัวคอลัมน์ให้อัตโนมัติ — ไม่ต้องแก้ไฟล์ต้นทาง',
+      'ก่อนนำเข้า ระบบตัดแถวสรุปยอดออก แล้วตรวจ % Loss ผิดปกติ, Com. Batch ซ้ำ และน้ำหนักที่เป็นไปไม่ได้',
+      'เลือกเฉพาะ Work Center และกะที่คุณดูแล เกณฑ์ตั้งต้นดึงมาจาก CONFIG ของระบบเดิม'
+    ][s.onb];
+    const onbCta = ['ถัดไป · ตรวจข้อมูล','ถัดไป · ตั้งเกณฑ์','เริ่มใช้งาน'][s.onb];
+    const stBg = i => s.onb >= i ? ACC : 'rgba(233,233,237,.14)';
+    const tabColor = v => s.a===v ? ACC : '#75798c';
+
+    return {
+      showEN, showCN, k, rangeLabel:k.label,
+      dayBg:d.bg, dayFg:d.fg, sumBg:su.bg, sumFg:su.fg,
+      aHome:s.a==='home', aDown:s.a==='down', aEnergy:s.a==='energy', aQual:s.a==='qual', aOrder:s.a==='order', aCoil:s.a==='coil',
+      tab1:tabColor('home'), tab2:tabColor('down'), tab3:tabColor('energy'), tab4:tabColor('qual'),
+      orders, topCauses, dtLog, kwhBars, util, scrapBars, coilList, orderCoils, trace, lossBars,
+      bHome:s.b==='home', bOrder:s.b==='order', bCoil:s.b==='coil', orderCards, orderLossBars,
+      bCrumb: s.b==='home' ? 'PK-CRL · PLANT 1300 · 1–2 พ.ค. 2569' : s.b==='order' ? 'ORDER · 23 ม้วน · 2 พ.ค.' : 'ORDER 138100000568 · ม้วน',
+      bTitle: s.b==='home' ? 'Production Order' : s.b==='order' ? '138100000568' : '2650310010',
+      cHome:s.c==='home', cEvent:s.c==='event', actions, feed, affected, hist,
+      onb0:s.onb===0, onb1:s.onb===1, onb2:s.onb===2,
+      st1:stBg(0), st2:stBg(1), st3:stBg(2), stepNo, stepTitle, stepTitleCn, stepBody, onbCta,
+      sources, checks, mapping, wcChips, targets, toggles, langChips,
+      go: {
+        rDay:this.set({range:'day'}), rSum:this.set({range:'sum'}),
+        aHome:this.set({a:'home'}), aDown:this.set({a:'down'}), aEnergy:this.set({a:'energy'}),
+        aQual:this.set({a:'qual'}), aOrder:this.set({a:'order'}), aCoil:this.set({a:'coil'}),
+        bHome:this.set({b:'home'}), bOrder:this.set({b:'order'}), bCoil:this.set({b:'coil'}),
+        cHome:this.set({c:'home'}), cEvent:this.set({c:'event'}),
+        settings:() => { location.hash = '#2e'; },
+        onbNext:() => this.setState({ onb:(s.onb+1)%3 }),
+        onbBack:() => this.setState({ onb:(s.onb+2)%3 })
+      }
+    };
+  }
+}
+
+</script>
+</body>
+</html>

@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics><meta name="ext-resource-dependency" content="./data/coils.js" data-resource-id="coilsData">
+<link rel="stylesheet" href="_ds/nocturne-af306fc4-8c3b-414e-a17b-61f45b8bd0dc/styles.css">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Sans+Thai:wght@400;500;600&family=Noto+Sans+SC:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+<style>
+body{margin:0;background:#0f111c;color:#e9e9ed;font-family:"Inter","Noto Sans Thai","Noto Sans SC",system-ui,sans-serif}
+a{color:#b5abfc;text-decoration:none}a:hover{color:#d2cefd}
+.ph{line-height:1}
+::selection{background:rgba(145,132,217,.3)}
+@media (max-width:760px){
+  body{overflow-x:hidden}
+  .report-sidebar{display:none!important}
+  .report-main{width:100%;padding:0 16px 32px!important}
+  .report-main .report-toolbar{margin:0 -16px 16px!important;padding:12px 16px!important}
+  .report-toolbar>div:last-child{width:100%;min-width:0;flex-wrap:wrap;gap:8px!important}
+  .report-toolbar>div:last-child>div:nth-child(2){flex:1;min-width:0}
+  .date-range{display:flex;align-items:center;gap:6px}
+  .date-range input{width:132px;min-width:0;color:#d2cefd;background:#161826;border:0;font:inherit;font-size:12px;padding:7px 6px;color-scheme:dark}
+  .utility-grid{grid-template-columns:minmax(0,1.6fr) .9fr .9fr 1fr!important}
+  .order-tabs{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .order-size-grid,.order-metrics-grid{grid-template-columns:minmax(0,1fr)!important}
+  .order-efficiency-grid{grid-template-columns:minmax(0,1fr)!important;gap:12px!important}
+  .order-efficiency-grid>div{border-left:0!important;border-top:1px solid rgba(233,233,237,.1);padding:12px 0 0!important}
+  .order-efficiency-grid>div:first-child{border-top:0;padding-top:0!important}
+  .weight-summary-cards{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .overview-summary-grid,.overview-detail-grid,.overview-kpi-grid{grid-template-columns:minmax(0,1fr)!important}
+  .order-size-grid>div{flex-direction:column!important;align-items:flex-start!important;padding:10px 12px!important;gap:4px!important}
+  .order-size-grid>div>div:last-child{font-size:17px!important;max-width:100%;overflow-wrap:anywhere}
+  .order-metric-row{flex-direction:column;align-items:flex-start!important;gap:3px!important}
+  .order-metric-row>span:last-child{align-self:flex-end}
+  .order-tabs button{min-width:0;white-space:normal;overflow:hidden;text-overflow:ellipsis;padding-left:5px!important;padding-right:5px!important}
+  .date-range{width:100%;justify-content:space-between}
+  .date-range input{width:calc(50% - 10px)}
+  .utility-grid{grid-template-columns:minmax(0,1.4fr) .8fr .8fr!important}
+  .utility-grid>span:nth-child(4n){display:none}
+}
+.overview-reference-card{border-radius:14px!important;box-shadow:none!important;color:#f7f8ff}
+.overview-reference-card:first-child{background:#232532!important;border-top:3px solid #c950e5}
+.overview-reference-card:nth-child(2){background:#232532!important;border-top:3px solid #14d7d1}
+.overview-reference-card .ph{color:#ffffff!important}
+.overview-reference-card [style*="color:#9397ab"],.overview-reference-card [style*="color:#75798c"]{color:#b8bfd4!important}
+.overview-reference-card [style*="color:#b2b6ca"]{color:#e9edf8!important}
+.overview-reference-card [style*="color:#b5abfc"]{color:#a78bfa!important}
+.overview-reference-card [style*="border-bottom:1px dashed"]{border-bottom-color:rgba(233,233,237,.18)!important}
+.overview-infographic-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.overview-infographic-card{position:relative;overflow:hidden;min-height:106px;padding:16px 18px;border-radius:14px;color:#fff;box-shadow:0 10px 24px rgba(4,7,20,.18)}
+.overview-infographic-card:after{content:"";position:absolute;width:90px;height:90px;right:-24px;bottom:-38px;border:18px solid rgba(255,255,255,.12);border-radius:50%}
+.overview-infographic-card:nth-child(1){background:linear-gradient(135deg,#bd4dde,#765ae8)}
+.overview-infographic-card:nth-child(2){background:linear-gradient(135deg,#0fd2d2,#278edb)}
+.overview-infographic-card:nth-child(3){background:linear-gradient(135deg,#ee4dbd,#b94bdc)}
+.overview-infographic-card:nth-child(4){background:linear-gradient(135deg,#f0a447,#e96b75)}
+.overview-infographic-card .infographic-value{font-size:30px;font-weight:600;line-height:1.1;margin-top:12px;font-variant-numeric:tabular-nums}
+.overview-infographic-card .infographic-unit{font-size:10px;opacity:.8}
+.overview-chart-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.overview-chart-card{background:#161b31;border-radius:14px;box-shadow:0 0 0 1px rgba(233,233,237,.08);padding:18px 20px;min-width:0}
+.overview-donut{width:132px;height:132px;margin:12px auto 16px;border-radius:50%;display:grid;place-items:center}
+.overview-donut:after{content:"";width:78px;height:78px;border-radius:50%;background:#161b31;grid-area:1/1}
+.overview-donut-label{grid-area:1/1;z-index:1;text-align:center;font-size:11px;color:#fff;line-height:1.5}
+.overview-legend{display:flex;justify-content:space-between;gap:10px;font-size:10px;color:#aeb5cc}
+.overview-legend span{display:flex;align-items:center;gap:5px;min-width:0}
+.overview-legend i{width:8px;height:8px;border-radius:50%;display:block;flex:none}
+.overview-bar-chart{height:148px;display:flex;align-items:end;justify-content:space-around;gap:12px;padding:10px 6px 0;border-bottom:1px solid rgba(233,233,237,.14);background:repeating-linear-gradient(to top,transparent 0,transparent 35px,rgba(233,233,237,.07) 36px)}
+.overview-bar{width:28px;min-height:12px;border-radius:4px 4px 0 0;background:linear-gradient(to top,#7562e8,#13d6d5)}
+.overview-bar-item:nth-child(1) .overview-bar{background:linear-gradient(to top,#765be8,#d552e8)}
+.overview-bar-item:nth-child(2) .overview-bar{background:linear-gradient(to top,#3e75e7,#13d6d5)}
+.overview-bar-item{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:end;gap:6px;font-size:9px;color:#858da9}
+.overview-bar-value{font-size:9px;color:#e9e9ed;font-variant-numeric:tabular-nums}
+.overview-ops-card{position:relative;min-height:112px!important;border-radius:8px!important;background:#232532!important;box-shadow:0 0 0 1px #3f424d!important;padding:14px 16px!important}
+.overview-ops-card:nth-child(1){border-top:3px solid #f0aa45}
+.overview-ops-card:nth-child(2){border-top:3px solid #d65be8}
+.overview-ops-card:nth-child(3){border-top:3px solid #eb647e}
+.overview-ops-card:nth-child(4){border-top:3px solid #36d4c0}
+.overview-ops-card>div:first-child{color:#b8bfd4!important}
+.overview-ops-card>div:nth-child(2){font-size:30px!important;line-height:1.15}
+.overview-ops-card>div:last-child{color:#8992ad!important;line-height:1.45}
+.quality-card-grid>div:nth-child(3)>div:last-child{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}
+.quality-card-grid>div:nth-child(3)>div:last-child>div{border:1px solid rgba(145,132,217,.32);border-radius:8px;padding:12px!important;display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between;min-height:58px;background:#1b1d2b}
+.quality-card-grid>div:nth-child(3)>div:last-child>div>span:first-child{color:#b8bfd4!important;line-height:1.45}
+.quality-card-grid>div:nth-child(3)>div:last-child>div>span:last-child{font-size:22px!important;line-height:1;color:#f0aa45!important;margin-top:8px}
+.quality-card-grid>div:nth-child(3)>div:last-child>div:last-child>span:last-child{color:#36d4c0!important}
+.overview-utility-card{grid-column:1 / -1!important;width:100%;box-sizing:border-box}
+.overview-utility-card .utility-grid{width:100%;box-sizing:border-box}
+.overview-scrap-card{grid-column:1 / -1!important;width:100%;box-sizing:border-box}
+.overview-scrap-card>div:last-child{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 28px!important}
+.overview-scrap-card>div:last-child>div{min-width:0}
+.order-full-width{width:100%;max-width:none;box-sizing:border-box}
+.shift-picker{display:inline-flex;align-items:center;gap:4px;padding:3px;border:1px solid rgba(233,233,237,.16);border-radius:8px;background:#1b1d2b}
+.shift-picker button{border:0;border-radius:5px;padding:5px 9px;background:transparent;color:#8992ad;font:11px inherit;cursor:pointer}
+.shift-picker button.active{background:#d9a24e;color:#161826;font-weight:600}
+.shift-picker button:hover{background:rgba(217,162,78,.2);color:#f0aa45}
+.order-log-grid{grid-template-columns:64px 1.1fr 1.1fr .9fr .9fr .8fr .9fr 1fr!important;min-width:0!important;width:100%}
+.overview-power-card{display:none!important}
+.data-upload-zone{border:1px dashed rgba(145,132,217,.65);border-radius:10px;padding:12px;background:#1b1d2b}
+.data-upload-zone input{width:100%;color:#b8bfd4;font:11px inherit}
+.data-type-picker{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:9px}
+.data-type-picker button{border:1px solid rgba(233,233,237,.15);border-radius:7px;background:#232532;color:#b8bfd4;padding:8px 6px;font:11px inherit;cursor:pointer}
+.data-type-picker button:first-child{border-color:#36d4c0;color:#36d4c0}
+@media (max-width:900px){.overview-chart-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.overview-chart-card:last-child{grid-column:1 / -1}}
+@media (max-width:760px){.overview-infographic-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.overview-infographic-card{min-height:92px;padding:13px 14px}.overview-infographic-card .infographic-value{font-size:24px}}
+@media (max-width:760px){.overview-chart-grid{grid-template-columns:minmax(0,1fr)}.overview-chart-card:last-child{grid-column:auto}}
+@media (max-width:760px){.quality-card-grid>div:nth-child(3)>div:last-child{grid-template-columns:minmax(0,1fr)!important}}
+</style></helmet>
+
+<div style="display:flex;min-height:100vh;width:100%;font-size:14px">
+
+  <div class="report-sidebar" style="width:{{ sb.w }};flex:none;background:#161826;border-right:1px solid rgba(233,233,237,.1);padding:16px 0 22px;display:flex;flex-direction:column;gap:20px;position:sticky;top:0;height:100vh;transition:width .18s ease;overflow:hidden">
+    <div style="display:flex;align-items:center;gap:8px;padding:0 {{ sb.pad }};justify-content:{{ sb.justify }}">
+      <button onClick="{{ sb.toggle }}" title="ซ่อน / แสดงเมนู" style="width:34px;height:34px;flex:none;border-radius:8px;border:1px solid rgba(233,233,237,.16);background:transparent;color:#b2b6ca;display:flex;align-items:center;justify-content:center;cursor:pointer" style-hover="background:rgba(233,233,237,.07)"><i class="{{ sb.icon }}" style="font-size:17px"></i></button>
+      <sc-if value="{{ sb.open }}" hint-placeholder-val="{{ true }}">
+      <div style="min-width:0">
+        <div style="font-size:9px;letter-spacing:.13em;text-transform:uppercase;color:#75798c">PK-CRL · PLANT 1300</div>
+        <div style="font-size:15px;font-weight:500;letter-spacing:-.02em;font-family:'IBM Plex Mono',monospace;white-space:nowrap">Report_25-08-2026</div>
+      </div>
+      </sc-if>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:2px;padding:0 {{ sb.navPad }}">
+      <sc-for list="{{ nav }}" as="n" hint-placeholder-count="3">
+      <button onClick="{{ n.go }}" title="{{ n.th }}" style="display:flex;align-items:flex-start;gap:11px;justify-content:{{ n.justify }};text-align:left;font-family:inherit;border:0;border-radius:8px;cursor:pointer;padding:10px 11px;background:{{ n.bg }};color:{{ n.fg }};border-left:2px solid {{ n.edge }}" style-hover="background:rgba(233,233,237,.06)">
+        <i class="{{ n.icon }}" style="font-size:17px;margin-top:1px;flex:none;color:{{ n.iconColor }}"></i>
+        <sc-if value="{{ sb.open }}" hint-placeholder-val="{{ true }}">
+        <span style="display:block;min-width:0">
+          <span style="display:block;font-size:12.5px;font-weight:500">{{ n.en }}</span>
+          <span style="display:block;font-size:10px;color:#75798c;margin-top:2px">{{ n.cn }}</span>
+        </span>
+        </sc-if>
+      </button>
+      </sc-for>
+    </div>
+
+    <sc-if value="{{ sb.open }}" hint-placeholder-val="{{ true }}">
+    <div style="margin-top:auto;padding:0 20px;display:flex;flex-direction:column;gap:9px">
+      <div style="font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;color:#75798c">Data Source</div>
+      <div class="data-upload-zone">
+        <div style="font-size:11px;color:#e9e9ed;margin-bottom:8px">Upload master data</div>
+        <input type="file" accept=".xlsx,.xls,.csv" onChange="{{ uploadData }}" aria-label="Upload master data">
+        <div style="font-size:10px;color:#75798c;margin-top:6px">{{ uploadName }}</div>
+        <sc-if value="{{ uploadReady }}" hint-placeholder-val="{{ false }}">
+        <div class="data-type-picker">
+          <button onClick="{{ chooseSap }}">SAP</button>
+          <button onClick="{{ chooseProduction }}">Production Summary</button>
+        </div>
+        <div style="font-size:10px;color:#36d4c0;margin-top:7px">{{ uploadType }}</div>
+        </sc-if>
+      </div>
+      <div style="height:1px;background:linear-gradient(to right,rgba(233,233,237,.14),transparent);margin:4px 0"></div>
+      <div style="font-size:10px;color:#75798c;line-height:1.6">Yield target 98 / 95% · Abnormal loss &gt; 2%</div>
+    </div>
+    </sc-if>
+  </div>
+
+  <div class="report-main" style="flex:1;min-width:0;padding:0 30px 60px">
+
+    <div class="report-toolbar" style="position:sticky;top:0;z-index:5;background:rgba(15,17,28,.94);backdrop-filter:blur(6px);border-bottom:1px solid rgba(233,233,237,.1);margin:0 -30px 20px;padding:14px 30px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap">
+      <div style="display:flex;align-items:baseline;gap:10px;min-width:0">
+        <span style="font-size:13px;font-weight:500">{{ pageTitle }}</span>
+        <span style="font-size:10.5px;color:#75798c">อัปเดตล่าสุด 08:40 · {{ dateLabel }}</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;flex:none">
+        <span style="font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;color:#75798c">ช่วงวันที่ / 日期范围</span>
+        <div class="date-range" style="display:flex;align-items:center;border:1px solid rgba(233,233,237,.16);border-radius:8px;overflow:hidden">
+          <input type="date" value="{{ dateStart }}" min="{{ dateMin }}" max="{{ dateMax }}" onChange="{{ dateStartChange }}" aria-label="วันที่เริ่มต้น">
+          <span style="color:#75798c">ถึง</span>
+          <input type="date" value="{{ dateEnd }}" min="{{ dateMin }}" max="{{ dateMax }}" onChange="{{ dateEndChange }}" aria-label="วันที่สิ้นสุด">
+        </div>
+        <div style="font-size:11px;color:#9397ab;font-variant-numeric:tabular-nums;border:1px solid rgba(233,233,237,.16);border-radius:8px;padding:7px 11px">{{ dateCount }}</div>
+      </div>
+    </div>
+
+
+    <sc-if value="{{ isOverview }}" hint-placeholder-val="{{ true }}">
+    <div style="display:flex;flex-direction:column;gap:20px">
+      <div>
+        <div style="font-size:27px;font-weight:500;letter-spacing:-.025em">Overview / ภาพรวมการผลิต / 生产总览</div>
+        <div style="font-size:12px;color:#b5abfc;letter-spacing:.08em;text-transform:uppercase;margin-top:5px">Executive summary · {{ dateLabel }} · WC PK01 / CR01</div>
+        <div style="height:1px;background:linear-gradient(to right,transparent,rgba(233,233,237,.16) 48px,rgba(233,233,237,.16) calc(100% - 48px),transparent);margin-top:16px"></div>
+      </div>
+
+      <div class="overview-infographic-kpis">
+        <sc-for list="{{ infographicCards }}" as="r" hint-placeholder-count="4">
+        <div class="overview-infographic-card">
+          <div style="display:flex;justify-content:space-between;align-items:center;font-size:10px;letter-spacing:.08em;text-transform:uppercase;opacity:.9"><span>{{ r.label }}</span><i class="{{ r.icon }}" style="font-size:17px"></i></div>
+          <div class="infographic-value">{{ r.value }} <span class="infographic-unit">{{ r.unit }}</span></div>
+        </div>
+        </sc-for>
+      </div>
+
+      <div class="overview-chart-grid">
+        <div class="overview-chart-card">
+          <div style="font-size:13px;font-weight:500">Production Mix</div>
+          <div style="font-size:10px;color:#8790ab;margin-top:4px">Output vs input weight</div>
+          <div class="overview-donut" style="background:conic-gradient(#11d6d1 0 {{ infographicMix.output }}%,#d62fce {{ infographicMix.output }}% 100%)">
+            <div class="overview-donut-label">{{ infographicMix.output }}%<br><span style="font-size:9px;color:#aeb5cc">output</span></div>
+          </div>
+          <div class="overview-legend"><span><i style="background:#11d6d1"></i>Output {{ infographicMix.output }}%</span><span><i style="background:#d62fce"></i>Loss {{ infographicMix.loss }}%</span></div>
+        </div>
+        <div class="overview-chart-card">
+          <div style="font-size:13px;font-weight:500">Yield vs Loss</div>
+          <div style="font-size:10px;color:#8790ab;margin-top:4px">Efficiency status</div>
+          <div class="overview-donut" style="background:conic-gradient(#7b4fe8 0 {{ infographicMix.yield }}%,#ec43bb {{ infographicMix.yield }}% 100%)">
+            <div class="overview-donut-label">{{ infographicMix.yield }}%<br><span style="font-size:9px;color:#aeb5cc">yield</span></div>
+          </div>
+          <div class="overview-legend"><span><i style="background:#7b4fe8"></i>Yield {{ infographicMix.yield }}%</span><span><i style="background:#ec43bb"></i>Gap {{ infographicMix.gap }}%</span></div>
+        </div>
+        <div class="overview-chart-card overview-power-card">
+          <div style="font-size:13px;font-weight:500">Daily Power Use</div>
+          <div style="font-size:10px;color:#8790ab;margin-top:4px">CRL rolling power · kWh</div>
+          <div class="overview-bar-chart">
+            <sc-for list="{{ overviewBars }}" as="b" hint-placeholder-count="2">
+            <div class="overview-bar-item"><span class="overview-bar-value">{{ b.value }}</span><div class="overview-bar" style="height:{{ b.height }}"></div><span>{{ b.label }}</span></div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+
+      <div class="overview-summary-grid" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:start">
+        <div class="overview-reference-card" style="background:#232532;border-radius:8px;box-shadow:0 0 0 1px #3f424d;padding:18px 20px">
+          <div style="display:flex;align-items:center;gap:9px;padding-bottom:11px;border-bottom:1px solid rgba(233,233,237,.1)">
+            <i class="ph ph-stack" style="font-size:18px;color:#9184d9"></i>
+            <div style="font-size:14px;font-weight:500">Volume Summary / 产量汇总</div>
+          </div>
+          <div style="display:flex;flex-direction:column">
+            <sc-for list="{{ volRows }}" as="r" hint-placeholder-count="5">
+            <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:11px 0;border-bottom:1px dashed rgba(233,233,237,.08)">
+              <span style="font-size:11.5px;color:#9397ab">{{ r.label }}</span>
+              <span style="flex:none;font-variant-numeric:tabular-nums;color:{{ r.color }}"><span style="font-size:19px;font-weight:500">{{ r.v }}</span><span style="font-size:10.5px;color:#75798c"> {{ r.unit }}</span></span>
+            </div>
+            </sc-for>
+          </div>
+        </div>
+
+        <div class="overview-reference-card" style="background:#232532;border-radius:8px;box-shadow:0 0 0 1px #3f424d;padding:18px 20px">
+          <div style="display:flex;align-items:center;gap:9px;padding-bottom:11px;border-bottom:1px solid rgba(233,233,237,.1)">
+            <i class="ph ph-scales" style="font-size:18px;color:#9184d9"></i>
+            <div style="font-size:14px;font-weight:500">Weight Summary / 重量汇总</div>
+          </div>
+          <div style="display:flex;flex-direction:column">
+            <sc-for list="{{ wtRows }}" as="r" hint-placeholder-count="4">
+            <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:11px 0;border-bottom:1px dashed rgba(233,233,237,.08)">
+              <span style="font-size:11.5px;color:#9397ab">{{ r.label }}</span>
+              <span style="flex:none;font-variant-numeric:tabular-nums;color:{{ r.color }}"><span style="font-size:19px;font-weight:500">{{ r.v }}</span><span style="font-size:10.5px;color:#75798c"> KG</span></span>
+            </div>
+            </sc-for>
+          </div>
+        </div>
+
+        <div style="grid-column:1 / -1;background:#232532;border-radius:8px;box-shadow:0 0 0 1px #3f424d;padding:18px 20px">
+          <div style="display:flex;align-items:center;gap:9px;padding-bottom:11px;border-bottom:1px solid rgba(233,233,237,.1)">
+            <i class="ph ph-lightning" style="font-size:18px;color:#d9a24e"></i>
+            <div style="font-size:14px;font-weight:500">Efficiency / 效率汇总</div>
+          </div>
+          <div class="overview-kpi-grid" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;align-items:start;padding-top:6px">
+            <div>
+              <div style="font-size:11.5px;color:#9397ab">Average Yield / ค่าเฉลี่ยผลได้ / 平均良率</div>
+              <div style="font-size:40px;font-weight:500;letter-spacing:-.03em;font-variant-numeric:tabular-nums;color:#4ec0a8;margin-top:2px">{{ tot.yield }}%</div>
+              <div style="height:5px;border-radius:3px;background:rgba(233,233,237,.1);margin-top:10px;position:relative">
+                <div style="position:absolute;left:0;top:0;bottom:0;border-radius:3px;background:#4ec0a8;width:{{ tot.yieldW }}"></div>
+                <div style="position:absolute;top:-4px;bottom:-4px;left:60%;width:1px;background:#e9e9ed"></div>
+              </div>
+              <div style="font-size:10px;color:#75798c;margin-top:6px">✓ เหนือเกณฑ์ 98% · แกน 96–100%</div>
+            </div>
+            <div style="border-top:1px solid rgba(233,233,237,.1);padding-top:14px">
+              <div style="font-size:11.5px;color:#9397ab;line-height:1.5">Actual Total Loss / ผลรวมน้ำหนักสูญเสีย / 总损耗</div>
+              <div style="font-variant-numeric:tabular-nums;margin-top:4px"><span style="font-size:28px;font-weight:500;color:#d9a24e">{{ tot.loss }}</span><span style="font-size:11px;color:#75798c"> KG</span></div>
+            </div>
+            <div style="border-top:1px solid rgba(233,233,237,.1);padding-top:14px">
+              <div style="font-size:11.5px;color:#9397ab;line-height:1.5">Avg. Loss / Coil / เฉลี่ยต่อม้วน / 平均损耗</div>
+              <div style="font-variant-numeric:tabular-nums;margin-top:4px"><span style="font-size:28px;font-weight:500;color:#d9a24e">{{ tot.lossPer }}</span><span style="font-size:11px;color:#75798c"> KG</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="overview-detail-grid" style="display:grid;grid-template-columns:minmax(0,1.55fr) minmax(280px,.85fr);gap:16px;align-items:start">
+        <div class="overview-utility-card" style="background:#232532;border-radius:8px;box-shadow:0 0 0 1px #3f424d;padding:18px 20px">
+          <div style="display:flex;align-items:center;gap:9px;padding-bottom:11px;border-bottom:1px solid rgba(233,233,237,.1)">
+            <i class="ph ph-gauge" style="font-size:18px;color:#9184d9"></i>
+            <div style="font-size:14px;font-weight:500">Utilities &amp; Consumables / ค่าน้ำ ค่าไฟ และวัสดุสิ้นเปลือง / 能耗与消耗</div>
+          </div>
+          <div class="utility-grid" style="display:grid;grid-template-columns:minmax(0,1.6fr) .9fr .9fr 1fr;gap:0 12px;align-items:center">
+            <span style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#75798c;padding:10px 0 8px">รายการ / 项目</span>
+            <span style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#b5abfc;text-align:right;padding:10px 0 8px">Day · {{ dateEndLabel }}</span>
+            <span style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#75798c;text-align:right;padding:10px 0 8px">Total · {{ dateLabel }}</span>
+            <span style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#75798c;text-align:right;padding:10px 0 8px">ต่อตัน</span>
+            <sc-for list="{{ utility }}" as="u" hint-placeholder-count="7">
+            <span style="border-top:1px dashed rgba(233,233,237,.08);padding:10px 0"><span style="display:block;font-size:11.5px">{{ u.th }}</span><span style="display:block;font-size:10px;color:#75798c;font-family:'Noto Sans SC',sans-serif">{{ u.cn }}</span></span>
+            <span style="border-top:1px dashed rgba(233,233,237,.08);padding:10px 0;text-align:right;font-size:13px;font-variant-numeric:tabular-nums;color:{{ u.color }}">{{ u.day }}</span>
+            <span style="border-top:1px dashed rgba(233,233,237,.08);padding:10px 0;text-align:right;font-size:13px;font-variant-numeric:tabular-nums;color:#b2b6ca">{{ u.sum }}</span>
+            <span style="border-top:1px dashed rgba(233,233,237,.08);padding:10px 0;text-align:right;font-size:11px;font-variant-numeric:tabular-nums;color:#75798c">{{ u.per }}</span>
+            </sc-for>
+          </div>
+          <div style="font-size:10px;color:#75798c;margin-top:12px;line-height:1.6">ค่าน้ำ (水耗) ไม่มีอยู่ในไฟล์สรุปการผลิตรายวัน — ต้องต่อมิเตอร์น้ำหรือเพิ่มคอลัมน์ในชีตก่อนจึงจะรายงานได้</div>
+        </div>
+
+        <div class="overview-scrap-card" style="background:#232532;border-radius:8px;box-shadow:0 0 0 1px #3f424d;padding:18px 20px">
+          <div style="display:flex;align-items:center;gap:9px;padding-bottom:11px;border-bottom:1px solid rgba(233,233,237,.1)">
+            <i class="ph ph-recycle" style="font-size:18px;color:#9184d9"></i>
+            <div style="font-size:14px;font-weight:500">Scrap Breakdown / เศษวัสดุ / 废料明细</div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:baseline;padding:12px 0 14px">
+            <span style="font-size:11.5px;color:#9397ab">รวม {{ dateLabel }} / 合计</span>
+            <span style="font-variant-numeric:tabular-nums"><span style="font-size:22px;font-weight:500">{{ scrapTotal }}</span><span style="font-size:10.5px;color:#75798c"> KG</span></span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:11px">
+            <sc-for list="{{ scrap }}" as="s" hint-placeholder-count="6">
+            <div style="display:flex;flex-direction:column;gap:5px">
+              <div style="display:flex;justify-content:space-between;gap:10px;align-items:baseline">
+                <span style="font-size:11.5px">{{ s.th }} <span style="color:#75798c;font-size:10px;font-family:'Noto Sans SC',sans-serif">{{ s.cn }}</span></span>
+                <span style="flex:none;font-size:11.5px;font-variant-numeric:tabular-nums;color:#9397ab">{{ s.kg }}</span>
+              </div>
+              <div style="height:6px;border-radius:2px;background:rgba(233,233,237,.09)"><div style="height:6px;border-radius:2px;background:#9184d9;width:{{ s.w }}"></div></div>
+            </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+
+      <div class="overview-ops-grid" style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px">
+        <sc-for list="{{ opsRows }}" as="o" hint-placeholder-count="4">
+        <div class="overview-ops-card" style="background:#232532;border-radius:8px;box-shadow:0 0 0 1px #3f424d;padding:14px 16px">
+          <div style="font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:#9397ab">{{ o.label }}</div>
+          <div style="font-size:24px;font-weight:500;font-variant-numeric:tabular-nums;letter-spacing:-.02em;margin-top:4px;color:{{ o.color }}">{{ o.v }}<span style="font-size:11px;color:#75798c"> {{ o.unit }}</span></div>
+          <div style="font-size:10.5px;color:#75798c;margin-top:3px">{{ o.note }}</div>
+        </div>
+        </sc-for>
+      </div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ isQuality }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-direction:column;gap:20px">
+      <div>
+        <div style="font-size:27px;font-weight:500;letter-spacing:-.025em">Data Quality Review / ตรวจข้อมูล / 数据质量审查</div>
+        <div style="font-size:12px;color:#b5abfc;margin-top:5px">ตรวจข้อมูลเป็นรายการ แยกข้อมูลปกติและรายการที่ต้องตรวจสอบ</div>
+        <div style="height:1px;background:linear-gradient(to right,transparent,rgba(233,233,237,.16) 48px,rgba(233,233,237,.16) calc(100% - 48px),transparent);margin-top:16px"></div>
+      </div>
+
+      <div class="quality-card-grid" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:stretch">
+        <sc-for list="{{ qualityCards }}" as="q" hint-placeholder-count="3">
+        <div style="background:#232532;border-radius:8px;box-shadow:0 0 0 1px {{ q.edge }};padding:18px 20px;grid-column:{{ q.span }};display:flex;flex-direction:column">
+          <div style="display:flex;align-items:flex-start;gap:9px;padding-bottom:11px;border-bottom:1px solid rgba(233,233,237,.1)">
+            <i class="{{ q.icon }}" style="font-size:18px;color:{{ q.iconColor }};margin-top:1px;flex:none"></i>
+            <div style="font-size:13.5px;font-weight:500;line-height:1.4">{{ q.title }}</div>
+          </div>
+          <div style="display:grid;grid-template-columns:{{ q.cols }};gap:0 20px;flex:1">
+            <sc-for list="{{ q.rows }}" as="r" hint-placeholder-count="4">
+            <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:11px 0;border-bottom:1px dashed rgba(233,233,237,.08)">
+              <span style="font-size:11.5px;color:#9397ab;line-height:1.5">{{ r.label }}</span>
+              <span style="flex:none;font-size:17px;font-weight:500;font-variant-numeric:tabular-nums;color:{{ r.color }}">{{ r.v }}</span>
+            </div>
+            </sc-for>
+          </div>
+        </div>
+        </sc-for>
+      </div>
+
+      <div style="background:#232532;border-radius:8px;box-shadow:0 0 0 1px #5d5294;padding:18px 20px">
+        <div style="display:flex;align-items:center;gap:9px;padding-bottom:11px;border-bottom:1px solid rgba(233,233,237,.1)">
+          <i class="ph ph-warning-circle" style="font-size:18px;color:#d9a24e"></i>
+          <div style="font-size:14px;font-weight:500">รายการที่ต้องตรวจสอบ / Items to review / 需核查项目</div>
+        </div>
+        <div style="overflow-x:auto;max-height:520px;overflow-y:auto">
+        <div style="display:grid;grid-template-columns:34px 1.05fr 1fr .8fr .8fr .8fr 1.5fr;gap:0 12px;align-items:center;min-width:860px">
+          <sc-for list="{{ reviewHead }}" as="h" hint-placeholder-count="7">
+          <span style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#75798c;padding:11px 0 9px;text-align:{{ h.align }}">{{ h.t }}</span>
+          </sc-for>
+          <sc-for list="{{ reviewRows }}" as="r" hint-placeholder-count="5">
+          <span style="border-top:1px solid rgba(233,233,237,.08);padding:11px 0;font-size:12px;color:{{ r.color }}">{{ r.glyph }}</span>
+          <span style="border-top:1px solid rgba(233,233,237,.08);padding:11px 0;font:500 12px 'IBM Plex Mono',monospace">{{ r.crc }}</span>
+          <span style="border-top:1px solid rgba(233,233,237,.08);padding:11px 0;font-size:11.5px;color:#9397ab;font-family:'IBM Plex Mono',monospace">{{ r.hrc }}</span>
+          <span style="border-top:1px solid rgba(233,233,237,.08);padding:11px 0;font-size:12px;text-align:right;font-variant-numeric:tabular-nums;color:#b2b6ca">{{ r.gi }}</span>
+          <span style="border-top:1px solid rgba(233,233,237,.08);padding:11px 0;font-size:12px;text-align:right;font-variant-numeric:tabular-nums;color:#b2b6ca">{{ r.gr }}</span>
+          <span style="border-top:1px solid rgba(233,233,237,.08);padding:11px 0;font-size:12px;text-align:right;font-variant-numeric:tabular-nums;color:{{ r.color }}">{{ r.pct }}%</span>
+          <span style="border-top:1px solid rgba(233,233,237,.08);padding:11px 0;font-size:11px;color:#9397ab;line-height:1.5">{{ r.note }}</span>
+          </sc-for>
+        </div>
+        </div>
+        <div style="font-size:10.5px;color:#75798c;margin-top:12px;line-height:1.6">ทั้ง 5 รายการอยู่ในช่วงที่ระบบยอมรับได้ทางบัญชี (มี Batch, น้ำหนักเป็นบวก) จึงไม่นับเป็น Data Error — แต่ %Loss เกินเกณฑ์ 2% ต้องมีผู้ระบุสาเหตุก่อนปิดกะ</div>
+      </div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ isOrders }}" hint-placeholder-val="{{ false }}">
+    <div class="order-full-width" style="display:flex;flex-direction:column;gap:18px">
+      <div>
+        <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap">
+          <div style="font-size:27px;font-weight:500;letter-spacing:-.025em">Executive Order Summary</div>
+          <div class="shift-picker" aria-label="Shift selector">
+            <button class="{{ shiftMode==='N' ? 'active' : '' }}" onClick="{{ selectNight }}">N Night</button>
+            <button class="{{ shiftMode==='D' ? 'active' : '' }}" onClick="{{ selectDay }}">D Day</button>
+          </div>
+          <span style="font-size:11.5px;color:#75798c">{{ sel.window }}</span>
+        </div>
+        <div style="font-size:12px;color:#b5abfc;letter-spacing:.08em;text-transform:uppercase;margin-top:5px">Executive dashboard overview</div>
+        <div style="height:1px;background:linear-gradient(to right,transparent,rgba(233,233,237,.16) 48px,rgba(233,233,237,.16) calc(100% - 48px),transparent);margin-top:16px"></div>
+      </div>
+
+      <div class="order-tabs" style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px">
+        <sc-for list="{{ orderTabs }}" as="o" hint-placeholder-count="8">
+        <button onClick="{{ o.pick }}" style="font-family:'IBM Plex Mono',monospace;font-size:12px;padding:9px 12px;border-radius:8px;cursor:pointer;border:1px solid {{ o.edge }};background:{{ o.bg }};color:{{ o.fg }};display:flex;align-items:baseline;justify-content:center;gap:6px;white-space:nowrap" style-hover="background:rgba(145,132,217,.1)"><span>{{ o.id }}</span><span style="font-size:10px;opacity:.7">· {{ o.n }}</span></button>
+        </sc-for>
+      </div>
+
+      <div class="order-size-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div style="background:#232532;border-radius:8px;box-shadow:0 0 0 1px #3f424d;border-left:2px solid #9184d9;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;gap:12px">
+          <div style="font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:#9397ab">CRC Size / ขนาดผลิตภัณฑ์ / 冷轧卷尺寸</div>
+          <div style="font-size:20px;font-weight:500;font-variant-numeric:tabular-nums;flex:none">{{ sel.crcSize }}</div>
+        </div>
+        <div style="background:#232532;border-radius:8px;box-shadow:0 0 0 1px #3f424d;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;gap:12px">
+          <div style="font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:#9397ab">HRC Size / ขนาดวัตถุดิบ / 来料尺寸</div>
+          <div style="font-size:20px;font-weight:500;font-variant-numeric:tabular-nums;flex:none">{{ sel.hrcSize }}</div>
+        </div>
+      </div>
+
+      <div class="order-metrics-grid" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:start">
+        <div style="background:#232532;border-radius:8px;box-shadow:0 0 0 1px #3f424d;padding:16px 18px">
+          <div style="display:flex;align-items:center;gap:9px;padding-bottom:10px;border-bottom:1px solid rgba(233,233,237,.1)">
+            <i class="ph ph-stack" style="font-size:17px;color:#9184d9"></i><div style="font-size:13.5px;font-weight:500">Volume &amp; Time</div>
+          </div>
+          <sc-for list="{{ sel.volume }}" as="r" hint-placeholder-count="4">
+          <div class="order-metric-row" style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:10px 0;border-bottom:1px dashed rgba(233,233,237,.08)">
+            <span style="font-size:11.5px;color:#9397ab">{{ r.label }}</span>
+            <span style="flex:none;font-variant-numeric:tabular-nums;color:{{ r.color }}"><span style="font-size:17px;font-weight:500">{{ r.v }}</span><span style="font-size:10px;color:#75798c"> {{ r.unit }}</span></span>
+          </div>
+          </sc-for>
+        </div>
+        <div style="background:#232532;border-radius:8px;box-shadow:0 0 0 1px #3f424d;padding:16px 18px">
+          <div style="display:flex;align-items:center;gap:9px;padding-bottom:10px;border-bottom:1px solid rgba(233,233,237,.1)">
+            <i class="ph ph-scales" style="font-size:17px;color:#9184d9"></i><div style="font-size:13.5px;font-weight:500">Weight Processing</div>
+          </div>
+          <sc-for list="{{ sel.weight }}" as="r" hint-placeholder-count="4">
+          <div class="order-metric-row" style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:10px 0;border-bottom:1px dashed rgba(233,233,237,.08)">
+            <span style="font-size:11.5px;color:#9397ab">{{ r.label }}</span>
+            <span style="flex:none;font-variant-numeric:tabular-nums;color:{{ r.color }}"><span style="font-size:17px;font-weight:500">{{ r.v }}</span><span style="font-size:10px;color:#75798c"> KG</span></span>
+          </div>
+          </sc-for>
+        </div>
+        <div style="grid-column:1 / -1;background:#232532;border-radius:8px;box-shadow:0 0 0 1px #3f424d;padding:16px 18px">
+          <div style="display:flex;align-items:center;gap:9px;padding-bottom:10px;border-bottom:1px solid rgba(233,233,237,.1)">
+            <i class="ph ph-lightning" style="font-size:17px;color:#d9a24e"></i><div style="font-size:13.5px;font-weight:500">Efficiency</div>
+          </div>
+          <div class="order-efficiency-grid" style="display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr) minmax(0,1fr);gap:0 22px;align-items:center;padding-top:6px">
+            <div>
+              <div style="font-size:11.5px;color:#9397ab">Average Yield / ค่าเฉลี่ยผลได้ / 平均良率</div>
+              <div style="font-size:34px;font-weight:500;letter-spacing:-.03em;font-variant-numeric:tabular-nums;color:{{ sel.yieldColor }};margin-top:2px">{{ sel.yield }}%</div>
+              <div style="font-size:10px;color:#75798c;margin-top:4px">{{ sel.yieldNote }}</div>
+            </div>
+            <div style="border-left:1px solid rgba(233,233,237,.1);padding-left:20px">
+              <div style="font-size:11.5px;color:#9397ab;line-height:1.5">Total Loss / รวมสูญเสีย / 总损耗</div>
+              <div style="font-variant-numeric:tabular-nums;margin-top:4px"><span style="font-size:26px;font-weight:500;color:#d9a24e">{{ sel.loss }}</span><span style="font-size:11px;color:#75798c"> KG</span></div>
+            </div>
+            <div style="border-left:1px solid rgba(233,233,237,.1);padding-left:20px">
+              <div style="font-size:11.5px;color:#9397ab;line-height:1.5">Avg. Loss / Coil / เฉลี่ยต่อม้วน</div>
+              <div style="font-variant-numeric:tabular-nums;margin-top:4px"><span style="font-size:26px;font-weight:500;color:#d9a24e">{{ sel.lossPer }}</span><span style="font-size:11px;color:#75798c"> KG</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="background:#232532;border-radius:8px;box-shadow:0 0 0 1px #3f424d;padding:18px 20px">
+        <div style="font-size:16px;font-weight:500;letter-spacing:-.015em">Weight Comparison</div>
+        <div style="font-size:11px;color:#b5abfc;letter-spacing:.08em;text-transform:uppercase;margin-top:4px">Order {{ sel.id }} · HRC input vs CRC output · {{ sel.coilCount }} coils</div>
+        <div style="display:flex;flex-direction:column;gap:12px;margin-top:14px">
+          <div style="background:#1b1d2b;border-radius:8px;box-shadow:0 0 0 1px rgba(233,233,237,.07);padding:10px 12px 8px;width:100%">
+            <div style="display:flex;justify-content:center;gap:22px;font-size:11px;color:#b2b6ca;margin-bottom:6px">
+              <span style="display:flex;align-items:center;gap:7px"><span style="width:22px;height:0;border-top:1.5px dashed #9397ab;display:block"></span>HRC Input / 热轧卷 (KG)</span>
+              <span style="display:flex;align-items:center;gap:7px"><span style="width:22px;height:2.5px;background:#9184d9;display:block;border-radius:2px"></span>CRC Output / 冷轧卷 (KG)</span>
+            </div>
+            <svg viewBox="0 0 1000 360" style="width:100%;height:auto;overflow:visible;font-family:'IBM Plex Mono',monospace">
+              <sc-for list="{{ chart.grid }}" as="g" hint-placeholder-count="6">
+              <line x1="52" y1="{{ g.y }}" x2="985" y2="{{ g.y }}" stroke="rgba(233,233,237,.08)" stroke-width="1"></line>
+              </sc-for>
+              <polygon points="{{ chart.area }}" fill="rgba(145,132,217,.16)"></polygon>
+              <polyline points="{{ chart.hrc }}" fill="none" stroke="#9397ab" stroke-width="1.4" stroke-dasharray="5 4"></polyline>
+              <polyline points="{{ chart.crc }}" fill="none" stroke="#9184d9" stroke-width="2.2"></polyline>
+              <sc-for list="{{ chart.dots }}" as="d" hint-placeholder-count="20">
+              <circle cx="{{ d.x }}" cy="{{ d.yh }}" r="2.6" fill="#9397ab"></circle>
+              <circle cx="{{ d.x }}" cy="{{ d.yc }}" r="3" fill="#9184d9" stroke="#161826" stroke-width="1.2"></circle>
+              </sc-for>
+              {{ chart.labels }}
+            </svg>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px">
+            <sc-for list="{{ chart.side }}" as="s" hint-placeholder-count="4">
+            <div style="background:#1b1d2b;border-radius:8px;box-shadow:0 0 0 1px rgba(233,233,237,.07);border-top:2px solid {{ s.edge }};padding:8px 10px;min-width:0">
+              <div style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#9397ab;line-height:1.5">{{ s.label }}</div>
+              <div style="font-size:16px;font-weight:500;font-variant-numeric:tabular-nums;margin-top:3px;color:{{ s.color }};white-space:nowrap">{{ s.v }}</div>
+              <div style="font-size:10px;color:#75798c;margin-top:2px">{{ s.note }}</div>
+            </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+
+      <div style="background:#232532;border-radius:8px;box-shadow:0 0 0 1px #3f424d;padding:18px 20px">
+        <div style="font-size:16px;font-weight:500;letter-spacing:-.015em">Yield &amp; Material Loss Trend</div>
+        <div style="font-size:11px;color:#b5abfc;letter-spacing:.08em;text-transform:uppercase;margin-top:4px">Order {{ sel.id }} · efficiency analysis</div>
+        <div style="display:flex;flex-direction:column;gap:12px;margin-top:14px">
+          <div style="background:#1b1d2b;border-radius:8px;box-shadow:0 0 0 1px rgba(233,233,237,.07);padding:10px 12px 8px;width:100%">
+            <div style="display:flex;justify-content:center;gap:22px;font-size:11px;color:#b2b6ca;margin-bottom:6px">
+              <span style="display:flex;align-items:center;gap:7px"><span style="width:14px;height:9px;background:#4ec0a8;display:block;border-radius:2px"></span>Average Yield / 平均良率 (%)</span>
+              <span style="display:flex;align-items:center;gap:7px"><span style="width:14px;height:9px;background:#a34a63;display:block;border-radius:2px"></span>Material Loss / 损耗 (KG)</span>
+            </div>
+            <svg viewBox="0 0 1000 340" style="width:100%;height:auto;overflow:visible;font-family:'IBM Plex Mono',monospace">
+              <sc-for list="{{ trend.grid }}" as="g" hint-placeholder-count="6">
+              <line x1="56" y1="{{ g.y }}" x2="950" y2="{{ g.y }}" stroke="rgba(233,233,237,.08)" stroke-width="1"></line>
+              </sc-for>
+              <sc-for list="{{ trend.bars }}" as="b" hint-placeholder-count="10">
+              <rect x="{{ b.x }}" y="{{ b.y }}" width="{{ b.w }}" height="{{ b.h }}" fill="{{ b.fill }}" rx="1"></rect>
+              </sc-for>
+              <line x1="56" y1="{{ trend.targetY }}" x2="950" y2="{{ trend.targetY }}" stroke="#d9a24e" stroke-width="1.4" stroke-dasharray="6 4"></line>
+              <polyline points="{{ trend.line }}" fill="none" stroke="#4ec0a8" stroke-width="2.2"></polyline>
+              <sc-for list="{{ trend.dots }}" as="d" hint-placeholder-count="10">
+              <circle cx="{{ d.x }}" cy="{{ d.y }}" r="3.4" fill="#1b1d2b" stroke="#4ec0a8" stroke-width="2"></circle>
+              </sc-for>
+              {{ trend.labels }}
+            </svg>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px">
+            <div style="background:#1b1d2b;border-radius:8px;box-shadow:0 0 0 1px rgba(233,233,237,.07);border-top:2px solid #a34a63;padding:8px 10px;min-width:0">
+              <div style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#9397ab">Max loss / 最大损耗</div>
+              <div style="font-size:18px;font-weight:500;font-variant-numeric:tabular-nums;color:#c2637c;margin-top:3px">{{ trend.maxLoss }} KG</div>
+              <div style="font-size:10px;color:#75798c;margin-top:2px">{{ trend.maxAt }}</div>
+            </div>
+            <div style="background:#1b1d2b;border-radius:8px;box-shadow:0 0 0 1px rgba(233,233,237,.07);border-top:2px solid #4ec0a8;padding:8px 10px;min-width:0">
+              <div style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#9397ab">Min yield / 最低良率</div>
+              <div style="font-size:18px;font-weight:500;font-variant-numeric:tabular-nums;color:#4ec0a8;margin-top:3px">{{ trend.minYield }}%</div>
+              <div style="font-size:10px;color:#75798c;margin-top:2px">{{ trend.minAt }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="background:#232532;border-radius:8px;box-shadow:0 0 0 1px #3f424d;padding:18px 20px">
+        <div style="font-size:16px;font-weight:500;letter-spacing:-.015em">Detailed Production Log</div>
+        <div style="font-size:11px;color:#b5abfc;letter-spacing:.08em;text-transform:uppercase;margin-top:4px">Order {{ sel.id }}</div>
+        <div style="overflow-x:auto;max-height:560px;overflow-y:auto;margin-top:12px">
+        <div class="order-log-grid" style="display:grid;gap:0 14px;align-items:center">
+          <sc-for list="{{ logHead }}" as="h" hint-placeholder-count="8">
+          <span style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#75798c;padding:10px 0;text-align:{{ h.align }};border-bottom:1px solid rgba(233,233,237,.14)">{{ h.t }}</span>
+          </sc-for>
+          <sc-for list="{{ log }}" as="r" hint-placeholder-count="9">
+          <span style="border-bottom:1px solid rgba(233,233,237,.06);padding:11px 0;font:500 12.5px 'IBM Plex Mono',monospace">{{ r.seq }}</span>
+          <span style="border-bottom:1px solid rgba(233,233,237,.06);padding:11px 0;font-size:11.5px;color:#9397ab;font-family:'IBM Plex Mono',monospace">{{ r.hrc }}</span>
+          <span style="border-bottom:1px solid rgba(233,233,237,.06);padding:11px 0;font-size:12px;color:#b5abfc;font-family:'IBM Plex Mono',monospace">{{ r.crc }}</span>
+          <span style="border-bottom:1px solid rgba(233,233,237,.06);padding:11px 0;font-size:12.5px;text-align:right;font-variant-numeric:tabular-nums">{{ r.gi }}</span>
+          <span style="border-bottom:1px solid rgba(233,233,237,.06);padding:11px 0;font-size:12.5px;text-align:right;font-variant-numeric:tabular-nums">{{ r.gr }}</span>
+          <span style="border-bottom:1px solid rgba(233,233,237,.06);padding:11px 0;font-size:12.5px;text-align:right;font-variant-numeric:tabular-nums;color:#c2637c">{{ r.loss }}</span>
+          <span style="border-bottom:1px solid rgba(233,233,237,.06);padding:11px 0;font-size:12.5px;text-align:right;font-variant-numeric:tabular-nums;color:{{ r.color }}">{{ r.pct }}%</span>
+          <span style="border-bottom:1px solid rgba(233,233,237,.06);padding:11px 0;font-size:11.5px;text-align:right;font-variant-numeric:tabular-nums;color:#75798c">{{ r.time }}</span>
+          </sc-for>
+        </div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px">
+          <div style="font-size:10.5px;color:#75798c">{{ log.length }} จาก {{ sel.coilCount }} ม้วน · เรียงตามเวลาสแกน GI</div>
+          <button onClick="{{ toggleLog }}" style="font-family:inherit;font-size:11.5px;padding:6px 13px;border-radius:8px;border:1px solid #9184d9;background:transparent;color:#9184d9;cursor:pointer" style-hover="background:rgba(145,132,217,.14)">{{ logCta }}</button>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:1100}}">
+const ACC='#9184d9', WARN='#d9a24e', OK='#4ec0a8', LOSS='#a34a63', LOSS_T='#c2637c', DIM='#b2b6ca';
+const fmt = n => Math.round(n).toLocaleString('en-US');
+const h = React.createElement;
+/* ป้ายข้อความใน SVG ต้องสร้างด้วย createElement เพื่อให้อยู่ใน SVG namespace */
+const svgText = (key, x, y, txt, o={}) => h('text', {
+  key, x, y, fill:o.fill||'#75798c', fontSize:o.size||11, textAnchor:o.anchor||'start',
+  fontFamily:"'IBM Plex Mono', monospace", transform:o.rotate ? 'rotate('+o.rotate+' '+x+' '+y+')' : undefined
+}, txt);
+
+/* ขนาด CRC/HRC และกะ อ่านจาก Material / Component Description ของ SAP export */
+const META = {
+  '138100000559': {crc:'1.11 x 482', hrc:'3.00 x 482', shift:'Shift 1', win:'1 พ.ค. 06:21 → 2 พ.ค. 05:27'},
+  '138100000568': {crc:'2.90 x 383', hrc:'4.50 x 383', shift:'Shift 3', win:'1 พ.ค. 23:15 → 2 พ.ค. 01:52'},
+  '138100000539': {crc:'1.11 x 457', hrc:'3.50 x 457', shift:'Shift 3', win:'2 พ.ค. 01:58 → 04:36'},
+  '138100000558': {crc:'1.50 x 417', hrc:'3.50 x 417', shift:'Shift 2', win:'1 พ.ค. 22:21 → 23:07'},
+  '138100000557': {crc:'1.50 x 470', hrc:'3.50 x 470', shift:'Shift 1', win:'1 พ.ค. 05:52 → 22:23'},
+  '138100000541': {crc:'1.11 x 439', hrc:'3.00 x 439', shift:'Shift 1', win:'2 พ.ค. 05:25 → 06:32'},
+  '138100000540': {crc:'1.11 x 439', hrc:'3.00 x 439', shift:'Shift 1', win:'2 พ.ค. 04:42 → 05:10'},
+  '138100000561': {crc:'1.11 x 479', hrc:'3.40 x 479', shift:'Shift 1', win:'1 พ.ค. 05:30 → 05:44'}
+};
+
+class Component extends DCLogic {
+  state = { tab:'overview', order:'138100000559', allLog:false, raw:null, navOpen:true, dateStart:'2026-05-01', dateEnd:'2026-05-02', uploadName:'No file selected', uploadType:'Select data type after upload', uploadReady:false, shiftMode:'D' };
+
+  componentDidMount(){
+    import('./data/coils.js').then(m => this.setState({raw:m.ORDERS_RAW})).catch(e => console.error('coils.js', e));
+  }
+
+  uploadData = event => {
+    const file = event.target.files && event.target.files[0];
+    if (file) this.setState({uploadName:file.name, uploadType:'Select SAP or Production Summary', uploadReady:true});
+  };
+
+  chooseSap = () => { if (this.state.uploadName !== 'No file selected') this.setState({uploadType:'SAP'}); };
+  chooseProduction = () => { if (this.state.uploadName !== 'No file selected') this.setState({uploadType:'Production Summary'}); };
+  selectNight = () => this.setState({shiftMode:'N'});
+  selectDay = () => this.setState({shiftMode:'D'});
+
+  changeDateRange(key){
+    return event => {
+      const value = event.target.value;
+      if (!value) return;
+      const current = this.state;
+      let start = key==='start' ? value : current.dateStart;
+      let end = key==='end' ? value : current.dateEnd;
+      const startMs = Date.parse(start+'T00:00:00'), endMs = Date.parse(end+'T00:00:00');
+      if (key==='start' && startMs > endMs) end = start;
+      if (key==='end' && endMs < startMs) start = end;
+      const finalStartMs = Date.parse(start+'T00:00:00'), finalEndMs = Date.parse(end+'T00:00:00');
+      if ((finalEndMs-finalStartMs)/86400000 > 30) {
+        if (key==='start') end = new Date(finalStartMs+30*86400000).toISOString().slice(0,10);
+        else start = new Date(finalEndMs-30*86400000).toISOString().slice(0,10);
+      }
+      this.setState({dateStart:start, dateEnd:end, allLog:false});
+    };
+  }
+
+  orders(){
+    const start = this.state.dateStart, end = this.state.dateEnd;
+    const toIso = value => { const m=String(value).trim().match(/^(\d{1,2})\/(\d{1,2})\/(\d{2})$/); return m ? '20'+m[3]+'-'+m[1].padStart(2,'0')+'-'+m[2].padStart(2,'0') : ''; };
+    return (this.state.raw||[]).filter(o => { const date=toIso(o.date); return date && date>=start && date<=end; }).map(o => {
+      const coils = o.c.map(([hrc,crc,gi,gr,t],i) => ({
+        i, hrc, crc, gi, gr, t, loss:gi-gr, pct: gi ? (gi-gr)/gi*100 : 0, yield: gi ? gr/gi*100 : 0
+      }));
+      const gi = coils.reduce((s,c)=>s+c.gi,0), gr = coils.reduce((s,c)=>s+c.gr,0);
+      return {id:o.o, desc:o.desc, comp:o.comp, date:o.date, wc:o.wc, coils, gi, gr, loss:gi-gr, yield: gi?gr/gi*100:0};
+    }).sort((a,b)=>b.gi-a.gi);
+  }
+
+  renderVals(){
+    const s = this.state, ords = this.orders();
+    const tot = ords.reduce((a,o)=>({gi:a.gi+o.gi, gr:a.gr+o.gr, n:a.n+o.coils.length}), {gi:0,gr:0,n:0});
+    const totYield = tot.gi ? tot.gr/tot.gi*100 : 0;
+    const allCoils = ords.flatMap(o => o.coils.map(c => ({...c, order:o.id})));
+    const flagged = allCoils.filter(c => c.pct > 2).sort((a,b)=>b.pct-a.pct);
+    const hrcSeen = {}, dupHrc = [];
+    allCoils.forEach(c => { if (hrcSeen[c.hrc]) dupHrc.push(c.hrc); else hrcSeen[c.hrc]=1; });
+
+    const open = s.navOpen;
+    const sb = {
+      open, w: open ? '236px' : '62px', pad: open ? '20px' : '14px',
+      navPad: open ? '10px' : '14px', justify: open ? 'flex-start' : 'center',
+      icon: open ? 'ph ph-sidebar-simple' : 'ph ph-list',
+      toggle: () => this.setState({navOpen:!open})
+    };
+
+    const nav = [
+      {key:'overview', th:'ภาพรวม', en:'Overview', cn:'生产总览', icon:'ph ph-squares-four'},
+      {key:'quality',  th:'ปัญหาที่ต้องตรวจสอบ', en:'Data quality review', cn:'数据质量审查', icon:'ph ph-warning-circle'},
+      {key:'orders',   th:'สรุปรายออเดอร์', en:'Order summary', cn:'订单汇总', icon:'ph ph-clipboard-text'}
+    ].map(n => {
+      const on = s.tab===n.key;
+      return {...n, bg:on?'rgba(145,132,217,.14)':'transparent', fg:on?'#e9e9ed':'#b2b6ca',
+              edge:on?ACC:'transparent', iconColor:on?ACC:'#75798c',
+              justify: open ? 'flex-start' : 'center',
+              go:()=>this.setState({tab:n.key})};
+    });
+
+    const volRows = [
+      {label:'Total Orders / จำนวนออเดอร์ / 订单数', v:String(ords.length), unit:'Orders', color:'#e9e9ed'},
+      {label:'HRC Input / ม้วนวัตถุดิบ / 热轧卷', v:String(tot.n), unit:'Coils', color:'#e9e9ed'},
+      {label:'CRC Coils / ม้วนผลิตภัณฑ์ / 冷轧卷', v:String(tot.n), unit:'Coils', color:'#b5abfc'},
+      {label:'Baby Coil / คอยล์ย่อย / 分卷', v:String(dupHrc.length), unit:'Items', color:'#b5abfc'},
+      {label:'Avg. Cycle Time / รอบเวลาเฉลี่ย', v:'7', unit:'นาที', color:WARN}
+    ];
+    const wtRows = [
+      {label:'Total HRC Input / น้ำหนักวัตถุดิบ / 热轧卷来料重量', v:fmt(tot.gi), color:'#e9e9ed'},
+      {label:'Total CRC Output / น้ำหนักผลิตภัณฑ์ / 冷轧卷产出重量', v:fmt(tot.gr), color:'#b5abfc'},
+      {label:'Avg. Input / HRC Coil / เฉลี่ยต่อม้วนเข้า', v:fmt(tot.n?tot.gi/tot.n:0), color:'#e9e9ed'},
+      {label:'Avg. Output / CRC Coil / เฉลี่ยต่อม้วนออก', v:fmt(tot.n?tot.gr/tot.n:0), color:'#b5abfc'}
+    ];
+    const infographicCards = [
+      {label:'Total orders', value:String(ords.length), unit:'orders', icon:'ph ph-clipboard-text'},
+      {label:'Production input', value:fmt(tot.gi), unit:'kg', icon:'ph ph-package'},
+      {label:'Production output', value:fmt(tot.gr), unit:'kg', icon:'ph ph-chart-line-up'},
+      {label:'Average yield', value:totYield.toFixed(1), unit:'%', icon:'ph ph-lightning'}
+    ];
+    const outputRatio = tot.gi ? tot.gr/tot.gi*100 : 0;
+    const infographicMix = {
+      output:outputRatio.toFixed(1), loss:(100-outputRatio).toFixed(1),
+      yield:totYield.toFixed(1), gap:(100-totYield).toFixed(1)
+    };
+
+    const dailyValues = {
+      '2026-05-01': {powerCrl:14587,powerPk:2573,acid:4,gas:1224,coolant:85,scrap:628,downtime:79,uptime:'86.90',throughput:'43.78'},
+      '2026-05-02': {powerCrl:12198,powerPk:2537,acid:4,gas:1168,coolant:80,scrap:1886,downtime:77,uptime:'82.50',throughput:'40.89'}
+    };
+    const dayKeys = Object.keys(dailyValues).filter(d => d>=s.dateStart && d<=s.dateEnd);
+    const endValues = dailyValues[s.dateEnd] || {};
+    const rangeValue = key => dayKeys.reduce((total,d) => total + (dailyValues[d][key] || 0), 0);
+    const overviewBars = dayKeys.map(d => ({label:d.slice(5), value:fmt(dailyValues[d].powerCrl), height:Math.max(18,dailyValues[d].powerCrl/15000*100).toFixed(0)+'%'}));
+
+    /* Day is always the final selected date; Total is the selected range. */
+    const utilData = [
+      ['ไฟฟ้า CRL / Rolling power','轧机电耗','powerCrl','kWh',WARN],
+      ['ไฟฟ้า PK / Pickling power','酸洗电耗','powerPk','kWh','#e9e9ed'],
+      ['ค่าน้ำ / Water','水耗',null,'','#75798c'],
+      ['กรดเกลือ / Hydrochloric acid','盐酸','acid','m³','#e9e9ed'],
+      ['แก๊สธรรมชาติ / Natural gas','酸洗天然气','gas','Nm³','#e9e9ed'],
+      ['น้ำมันรีด / Rolling coolant','轧制油','coolant','kg','#e9e9ed'],
+      ['เศษวัสดุรวม / Total scrap','废料合计','scrap','kg',WARN]
+    ];
+    const utility = utilData.filter(([, , key]) => key !== null).map(([th,cn,key,unit,color]) => {
+      const day = key==null ? null : endValues[key];
+      const total = key==null ? null : rangeValue(key);
+      const per = total && tot.gr ? (total/(tot.gr/1000)).toFixed(2)+' '+unit+'/t' : '—';
+      return {th, cn, color,
+        day: day==null ? '—' : fmt(day)+' '+unit,
+        sum: total==null ? '—' : fmt(total)+' '+unit,
+        per};
+    });
+
+    const scrapBase = [['ของเสียจากสายพานขาด','断带废',776],['ของเสียจากการปรับตั้ง','调整废',604],['ขอบแตก / รูพรุน','孔洞、边裂',506],['เศษหลังการเชื่อม','焊接切除废料',284],['สายรัดวัตถุดิบ','原料打包带',266],['ตัดหัว-ท้าย','切头切尾',196]];
+    const scrapDayTotal = endValues.scrap || 0;
+    const scrapTotalValue = rangeValue('scrap');
+    const scrapK = scrapDayTotal/1886;
+    const scrapData = scrapBase.map(([th,cn,kg]) => [th, cn, Math.round(kg*scrapK)]);
+    const scrapMax = Math.max(...scrapData.map(r=>r[2]), 1);
+    const scrap = scrapData.map(([th,cn,kg]) => ({th, cn, kg:fmt(kg)+' kg', w:(kg/scrapMax*100).toFixed(0)+'%'}));
+    const scrapTotal = fmt(scrapTotalValue);
+
+    const opsRows = [
+      {label:'Yield ต่ำสุดรายออเดอร์', v: ords.length ? ords.slice().sort((a,b)=>a.yield-b.yield)[0].yield.toFixed(2) : '—', unit:'%', color:WARN, note: ords.length ? 'Order '+ords.slice().sort((a,b)=>a.yield-b.yield)[0].id : ''},
+      {label:'อัตราการทำงาน / 作业率', v:endValues.uptime || '—', unit:'%', color:WARN, note:'วันสิ้นสุดช่วง · จากชีตรายวัน'},
+      {label:'หยุดเครื่อง / 停机', v:dayKeys.length ? String(rangeValue('downtime')) : '—', unit:'นาที', color:WARN, note:'รวมช่วงที่เลือก · จาก 停机记录'},
+      {label:'ผลผลิตต่อชั่วโมง / 小时产量', v:endValues.throughput || '—', unit:'t/h', color:OK, note:'วันสิ้นสุดช่วง · CRL output ÷ เวลาทำงานจริง'}
+    ];
+
+    const qualityCards = [
+      {span:'auto', cols:'minmax(0,1fr)', title:'Production Data Summary / สรุปข้อมูล / 生产数据摘要', icon:'ph ph-database', iconColor:ACC, edge:'#3f424d', rows:[
+        {label:'Processed Records / ข้อมูลที่ใช้ / 已处理记录', v:String(tot.n), color:'#e9e9ed'},
+        {label:'Baby Coil / คอยล์ย่อย / 分卷', v:String(dupHrc.length), color:'#b5abfc'},
+        {label:'Cross-shift Record / ข้ามกะ / 跨班记录', v:'2', color:WARN},
+        {label:'Check Log / บันทึกตรวจสอบ / 检查记录', v:String(flagged.length), color:'#e9e9ed'}
+      ]},
+      {span:'auto', cols:'minmax(0,1fr)', title:'Data Error Check / ตรวจข้อมูลผิดปกติ / 数据异常检查', icon:'ph ph-warning', iconColor:LOSS_T, edge:'#3f424d', rows:[
+        {label:'Missing Batch / ไม่มี Batch / 缺失批号', v:'0', color:LOSS_T},
+        {label:'Negative Weight / น้ำหนักติดลบ / 负重量', v:'0', color:LOSS_T},
+        {label:'Zero Weight / น้ำหนักเป็นศูนย์ / 零重量', v:'0', color:LOSS_T},
+        {label:'Abnormal CRC Output / น้ำหนัก CRC ผิดปกติ / 冷轧卷重量异常', v:'0', color:LOSS_T},
+        {label:'Total Data Errors / รวมข้อผิดพลาด / 异常总数', v:'0', color:LOSS_T}
+      ]},
+      {span:'1 / -1', cols:'repeat(4,minmax(0,1fr))', title:'Check Log Summary / สรุปบันทึกตรวจสอบ / 检查记录摘要', icon:'ph ph-clipboard-text', iconColor:WARN, edge:'#5d5294', rows:[
+        {label:'%Loss เกินเกณฑ์ 2% / 损耗超标', v:String(flagged.length), color:WARN},
+        {label:'Possible Missing HRC Scan / อาจไม่ได้สแกน HRC / 可能未扫描热轧卷', v:String(flagged.filter(c=>c.pct>10).length), color:WARN},
+        {label:'Suspicious Batch Code / Batch น่าสงสัย / 批号存疑', v:String(dupHrc.length), color:WARN},
+        {label:'Baby Coil ไม่ถือเป็น Data Error', v:'OK', color:OK}
+      ]}
+    ];
+
+    const reviewHead = [{t:'',align:'left'},{t:'CRC Batch',align:'left'},{t:'HRC Batch',align:'left'},{t:'Input (KG)',align:'right'},{t:'Output (KG)',align:'right'},{t:'% Loss',align:'right'},{t:'ข้อสังเกต / 备注',align:'left'}];
+    const reviewRows = flagged.slice(0,8).map(c => ({
+      glyph: c.pct>10 ? '✕' : '!', color: c.pct>10 ? LOSS_T : WARN,
+      crc:c.crc, hrc:c.hrc, gi:fmt(c.gi), gr:fmt(c.gr), pct:c.pct.toFixed(2),
+      note: c.pct>10 ? 'สูงผิดปกติ — อาจไม่ได้สแกน HRC หรือเป็น Baby Coil (Order '+c.order+')'
+           : c.pct>5 ? 'ม้วนแรกหลังเปลี่ยนสเปก (Order '+c.order+')'
+           : 'เกินเกณฑ์ 2% — ต้องระบุสาเหตุ (Order '+c.order+')'
+    }));
+
+    /* ── ออเดอร์ที่เลือก ── */
+    /* ถ้าเปลี่ยนวันที่แล้วออเดอร์ที่เลือกไม่อยู่ในวันนั้น ให้ใช้ออเดอร์ใหญ่สุดของวันนั้นแทน */
+    const sel0 = ords.find(o => o.id===s.order) || ords[0];
+    const meta = META[s.order] || {crc:'—', hrc:'—', shift:'—', win:''};
+    const coils = sel0 ? sel0.coils : [];
+    const n = coils.length;
+    const yColor = y => y>=99 ? OK : y>=98 ? ACC : WARN;
+
+    const orderTabs = ords.map(o => {
+      const on = o.id===s.order;
+      return {id:o.id, n:o.coils.length+' ม้วน',
+        edge:on?'#9184d9':'rgba(233,233,237,.16)', bg:on?'rgba(145,132,217,.16)':'transparent',
+        fg:on?'#d2cefd':'#9397ab', pick:()=>this.setState({order:o.id, allLog:false})};
+    });
+
+    const sel = sel0 ? {
+      id:sel0.id, shift:meta.shift, window:meta.win, crcSize:meta.crc, hrcSize:meta.hrc,
+      coilCount:n, loss:fmt(sel0.loss), lossPer:(sel0.loss/n).toFixed(1),
+      yield:sel0.yield.toFixed(2), yieldColor:yColor(sel0.yield),
+      yieldNote: sel0.yield>=98 ? '✓ เหนือเกณฑ์ 98%' : '✕ ต่ำกว่าเกณฑ์ 98%',
+      volume:[
+        {label:'HRC Input / ม้วนวัตถุดิบ / 热轧卷', v:String(n), unit:'Coils', color:'#e9e9ed'},
+        {label:'CRC Coils / ม้วนผลิตภัณฑ์ / 冷轧卷', v:String(n), unit:'Coils', color:'#b5abfc'},
+        {label:'Baby Coil / คอยล์ย่อย / 分卷', v:'0', unit:'Items', color:'#b5abfc'},
+        {label:'Avg. Cycle Time / รอบเวลาเฉลี่ย', v:'7', unit:'นาที', color:WARN}
+      ],
+      weight:[
+        {label:'Total HRC Input / 热轧卷来料重量', v:fmt(sel0.gi), color:'#e9e9ed'},
+        {label:'Total CRC Output / 冷轧卷产出重量', v:fmt(sel0.gr), color:'#b5abfc'},
+        {label:'Avg. Input / HRC Coil / 平均输入', v:fmt(sel0.gi/n), color:'#e9e9ed'},
+        {label:'Avg. Output / CRC Coil / 平均输出', v:fmt(sel0.gr/n), color:'#b5abfc'}
+      ]
+    } : {id:'—', volume:[], weight:[]};
+
+    /* ── Weight Comparison ── */
+    const X0=56, X1=980, Y0=40, Y1=300;
+    const px = i => n<2 ? (X0+X1)/2 : X0 + i*(X1-X0)/(n-1);
+    const vals = coils.flatMap(c => [c.gi, c.gr]);
+    const lo = vals.length ? Math.min(...vals) : 0, hi = vals.length ? Math.max(...vals) : 1;
+    const pad = (hi-lo)*0.12 || 50, aLo = lo-pad, aHi = hi+pad;
+    const py = v => Y1 - (v-aLo)/(aHi-aLo)*(Y1-Y0);
+    const gridN = 6;
+    const chart = {
+      grid: Array.from({length:gridN}, (_,i) => {
+        const v = aLo + i*(aHi-aLo)/(gridN-1), y = py(v);
+        return {y:y.toFixed(1), ty:(y+4).toFixed(1), label:fmt(v)};
+      }),
+      hrc: coils.map((c,i)=>px(i).toFixed(1)+','+py(c.gi).toFixed(1)).join(' '),
+      crc: coils.map((c,i)=>px(i).toFixed(1)+','+py(c.gr).toFixed(1)).join(' '),
+      area: n ? (X0.toFixed(1)+','+Y1+' '+coils.map((c,i)=>px(i).toFixed(1)+','+py(c.gr).toFixed(1)).join(' ')+' '+px(n-1).toFixed(1)+','+Y1) : '',
+      dots: coils.map((c,i)=>({x:px(i).toFixed(1), yh:py(c.gi).toFixed(1), yc:py(c.gr).toFixed(1)})),
+      ticks: coils.filter((c,i)=> n<=20 || i % Math.ceil(n/20) === 0).map(c=>({x:px(c.i).toFixed(1), label:'HRC '+(c.i+1)})),
+      labels: h('g', null, [
+        ...Array.from({length:gridN}, (_,i) => {
+          const v = aLo + i*(aHi-aLo)/(gridN-1);
+          return svgText('g'+i, 44, +(py(v)+4).toFixed(1), fmt(v), {anchor:'end'});
+        }),
+        ...coils.filter((c,i)=> n<=20 || i % Math.ceil(n/20) === 0)
+          .map(c => svgText('t'+c.i, +px(c.i).toFixed(1), 332, 'HRC '+(c.i+1), {size:10, anchor:'end', rotate:-42}))
+      ]),
+      side: sel0 ? [
+        {label:'Total HRC input / 热轧卷来料重量', v:fmt(sel0.gi)+' KG', note:'', color:'#e9e9ed', edge:'#9397ab'},
+        {label:'Total CRC output / 冷轧卷产出重量', v:fmt(sel0.gr)+' KG', note:'', color:'#b5abfc', edge:ACC},
+        {label:'Avg. input / HRC coil', v:fmt(sel0.gi/n)+' KG', note:'Per 1 HRC input / 热轧卷', color:'#e9e9ed', edge:'#9397ab'},
+        {label:'Avg. output / CRC coil', v:fmt(sel0.gr/n)+' KG', note:'Per 1 CRC coil / 冷轧卷', color:'#b5abfc', edge:ACC}
+      ] : []
+    };
+
+    /* ── Yield & Loss trend (ทุกม้วน; เกิน 24 ม้วนใช้ตัวอย่างเว้นระยะ) ── */
+    const tc = n>24 ? coils.filter((c,i)=> i % Math.ceil(n/24) === 0) : coils;
+    const m = tc.length;
+    const TX0=68, TX1=940, TY0=44, TY1=286;
+    const tx = i => m<2 ? (TX0+TX1)/2 : TX0 + i*(TX1-TX0)/(m-1);
+    const yv = tc.map(c=>c.yield), lv = tc.map(c=>c.loss);
+    const yLo = Math.min(93, Math.floor(Math.min(...yv,100)-1)), yHi = 100.5;
+    const lHi = Math.max(...lv,1)*1.35;
+    const tyY = v => TY1 - (v-yLo)/(yHi-yLo)*(TY1-TY0);
+    const tyL = v => TY1 - v/lHi*(TY1-TY0);
+    const barW = Math.max(9, Math.min(64, (TX1-TX0)/Math.max(m,1)*0.5));
+    const trend = {
+      grid: Array.from({length:6}, (_,i) => {
+        const v = yLo + i*(yHi-yLo)/5, y = tyY(v);
+        return {y:y.toFixed(1), ty:(y+4).toFixed(1), left:v.toFixed(0), right:fmt(lHi*(1-(y-TY0)/(TY1-TY0)))};
+      }),
+      bars: tc.map((c,i)=>{ const y=tyL(c.loss); return {x:(tx(i)-barW/2).toFixed(1), y:y.toFixed(1), w:barW.toFixed(1), h:(TY1-y).toFixed(1), fill:LOSS, cx:tx(i).toFixed(1), ly:(y+((TY1-y)/2)).toFixed(1), kg:fmt(c.loss)+' KG'}; }),
+      dots: tc.map((c,i)=>({x:tx(i).toFixed(1), y:tyY(c.yield).toFixed(1), ly:(tyY(c.yield)-11).toFixed(1), label:c.yield.toFixed(2)+'%', tick:'HRC '+(c.i+1)})),
+      line: tc.map((c,i)=>tx(i).toFixed(1)+','+tyY(c.yield).toFixed(1)).join(' '),
+      targetY: tyY(95).toFixed(1), targetTy: (tyY(95)-6).toFixed(1),
+      maxLoss: lv.length ? fmt(Math.max(...lv)) : '—',
+      maxAt: lv.length ? 'HRC '+(tc[lv.indexOf(Math.max(...lv))].i+1) : '',
+      minYield: yv.length ? Math.min(...yv).toFixed(2) : '—',
+      minAt: yv.length ? 'HRC '+(tc[yv.indexOf(Math.min(...yv))].i+1) : ''
+    };
+    const maxL = lv.length ? Math.max(...lv) : 0, minY = yv.length ? Math.min(...yv) : 0;
+    const everyOther = m > 12 ? 2 : 1;
+    trend.labels = h('g', null, [
+      ...Array.from({length:6}, (_,i) => {
+        const v = yLo + i*(yHi-yLo)/5, y = +tyY(v).toFixed(1);
+        return h('g', {key:'ax'+i}, [
+          svgText('l', 48, y+4, v.toFixed(0), {fill:OK, anchor:'end'}),
+          svgText('r', 958, y+4, fmt(lHi*(1-(y-TY0)/(TY1-TY0))), {fill:LOSS_T})
+        ]);
+      }),
+      svgText('tg', 948, +(tyY(95)-6).toFixed(1), 'Target 95%', {size:10, anchor:'end', fill:WARN}),
+      /* ป้ายน้ำหนักบนแท่ง: แสดงเฉพาะแท่งที่สูงสุด/ต่ำสุด เมื่อแท่งแคบเกินกว่าจะใส่ทุกอัน */
+      ...tc.map((c,i) => (barW >= 34 || c.loss === maxL)
+        ? svgText('b'+i, +tx(i).toFixed(1), +(tyL(c.loss)+ (TY1-tyL(c.loss))/2).toFixed(1), fmt(c.loss)+' KG',
+            {size:10, anchor:'middle', fill:'#e9e9ed'})
+        : null).filter(Boolean),
+      ...tc.map((c,i) => (m <= 12 || i % everyOther === 0 || c.yield === minY)
+        ? svgText('y'+i, +tx(i).toFixed(1), +(tyY(c.yield)-11).toFixed(1), c.yield.toFixed(2)+'%',
+            {size:10, anchor:'middle', fill:OK})
+        : null).filter(Boolean),
+      ...tc.map((c,i) => svgText('k'+i, +tx(i).toFixed(1), 316, 'HRC '+(c.i+1), {size:10, anchor:'end', rotate:-42}))
+    ]);
+
+    const logHead = [{t:'NO',align:'left'},{t:'HRC Batch',align:'left'},{t:'CRC Coils',align:'left'},{t:'Input (KG)',align:'right'},{t:'Output (KG)',align:'right'},{t:'Loss (KG)',align:'right'},{t:'Yield (%)',align:'right'},{t:'GI Time',align:'right'}];
+    const shown = s.allLog ? coils : coils.slice(0,12);
+    const log = shown.map(c => ({
+      seq:String(c.i+1), hrc:c.hrc, crc:c.crc, gi:fmt(c.gi), gr:fmt(c.gr), loss:fmt(c.loss),
+      pct:c.yield.toFixed(2), color:yColor(c.yield), time:c.t.replace(/:\d\d ([AP])M/,' $1M')
+    }));
+
+    const formatDate = value => {
+      const months = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+      const date = new Date(String(value)+'T00:00:00');
+      return Number.isNaN(date.getTime()) ? value : date.getDate()+' '+months[date.getMonth()]+' '+(date.getFullYear()+543);
+    };
+    const dateLabel = s.dateStart===s.dateEnd ? formatDate(s.dateStart) : formatDate(s.dateStart)+' – '+formatDate(s.dateEnd);
+    const pageTitle = {overview:'Overview / ภาพรวมการผลิต', quality:'Data Quality / ตรวจข้อมูล', orders:'Order Summary / สรุปรายออเดอร์'}[s.tab];
+
+    return {
+      sb, nav, isOverview:s.tab==='overview', isQuality:s.tab==='quality', isOrders:s.tab==='orders', infographicCards, infographicMix, overviewBars, shiftMode:s.shiftMode, selectNight:this.selectNight, selectDay:this.selectDay,
+      dateStart:s.dateStart, dateEnd:s.dateEnd, dateEndLabel:formatDate(s.dateEnd), dateMin:'2026-01-01', dateMax:'2026-12-31',
+      dateStartChange:this.changeDateRange('start'), dateEndChange:this.changeDateRange('end'),
+      dateLabel, pageTitle, dateCount: ords.length+' Order · '+tot.n+' ม้วน',
+      volRows, wtRows, utility, scrap, scrapTotal, opsRows,
+      tot:{loss:fmt(tot.gi-tot.gr), lossPer:(tot.n?(tot.gi-tot.gr)/tot.n:0).toFixed(1), yield:totYield.toFixed(2), yieldW:Math.max(0,Math.min(100,(totYield-96)/4*100)).toFixed(1)+'%'},
+      qualityCards, reviewHead, reviewRows,
+      orderTabs, sel, chart, trend, logHead, log,
+      logCta: s.allLog ? 'ย่อรายการ' : 'ดูทั้ง '+n+' ม้วน',
+      toggleLog: () => this.setState({allLog:!s.allLog})
+    };
+  }
+}
+
+</script>
+</body>
+</html>
