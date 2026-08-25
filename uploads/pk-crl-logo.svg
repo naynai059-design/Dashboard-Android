@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 72" role="img" aria-labelledby="title desc">
+  <title id="title">Asiametal logo</title>
+  <desc id="desc">Asiametal company logo</desc>
+  <rect width="320" height="72" rx="8" fill="#ffffff"/>
+  <path d="M12 12h35l17 17v31L47 72H12l17-17V29L12 12Z" fill="#168bd0"/>
+  <path d="M12 31h35l17 17v14L47 45H12Z" fill="#0a1837"/>
+  <path d="M12 48h21l14 14H12Z" fill="#0a1837"/>
+  <text x="82" y="49" fill="#071738" font-family="Arial,sans-serif" font-size="38" font-weight="500" letter-spacing="1">Asiametal</text>
+</svg>

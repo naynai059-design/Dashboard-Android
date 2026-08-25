@@ -59,8 +59,9 @@ a{color:#b5abfc;text-decoration:none}a:hover{color:#d2cefd}
 .overview-infographic-card:nth-child(2){background:linear-gradient(135deg,#0fd2d2,#278edb)}
 .overview-infographic-card:nth-child(3){background:linear-gradient(135deg,#ee4dbd,#b94bdc)}
 .overview-infographic-card:nth-child(4){background:linear-gradient(135deg,#f0a447,#e96b75)}
-.overview-infographic-card .infographic-value{font-size:30px;font-weight:600;line-height:1.1;margin-top:12px;font-variant-numeric:tabular-nums}
-.overview-infographic-card .infographic-unit{font-size:10px;opacity:.8}
+.overview-infographic-card .infographic-value{font-size:28px;font-weight:600;line-height:1.1;margin-top:12px;font-variant-numeric:tabular-nums;white-space:nowrap;letter-spacing:0}
+.overview-infographic-card:nth-child(2) .infographic-value,.overview-infographic-card:nth-child(3) .infographic-value{font-size:23px}
+.overview-infographic-card .infographic-unit{font-size:9px;opacity:.85}
 .overview-chart-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
 .overview-chart-card{background:#161b31;border-radius:14px;box-shadow:0 0 0 1px rgba(233,233,237,.08);padding:18px 20px;min-width:0}
 .overview-donut{width:132px;height:132px;margin:12px auto 16px;border-radius:50%;display:grid;place-items:center}
@@ -106,7 +107,7 @@ a{color:#b5abfc;text-decoration:none}a:hover{color:#d2cefd}
 .data-type-picker button{border:1px solid rgba(233,233,237,.15);border-radius:7px;background:#232532;color:#b8bfd4;padding:8px 6px;font:11px inherit;cursor:pointer}
 .data-type-picker button:first-child{border-color:#36d4c0;color:#36d4c0}
 @media (max-width:900px){.overview-chart-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.overview-chart-card:last-child{grid-column:1 / -1}}
-@media (max-width:760px){.overview-infographic-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.overview-infographic-card{min-height:92px;padding:13px 14px}.overview-infographic-card .infographic-value{font-size:24px}}
+@media (max-width:760px){.overview-infographic-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.overview-infographic-card{min-height:92px;padding:13px 14px}.overview-infographic-card .infographic-value{font-size:24px}.overview-infographic-card:nth-child(2) .infographic-value,.overview-infographic-card:nth-child(3) .infographic-value{font-size:20px}}
 @media (max-width:760px){.overview-chart-grid{grid-template-columns:minmax(0,1fr)}.overview-chart-card:last-child{grid-column:auto}}
 @media (max-width:760px){.quality-card-grid>div:nth-child(3)>div:last-child{grid-template-columns:minmax(0,1fr)!important}}
 </style></helmet>
@@ -115,13 +116,7 @@ a{color:#b5abfc;text-decoration:none}a:hover{color:#d2cefd}
 
   <div class="report-sidebar" style="width:{{ sb.w }};flex:none;background:#161826;border-right:1px solid rgba(233,233,237,.1);padding:16px 0 22px;display:flex;flex-direction:column;gap:20px;position:sticky;top:0;height:100vh;transition:width .18s ease;overflow:hidden">
     <div style="display:flex;align-items:center;gap:8px;padding:0 {{ sb.pad }};justify-content:{{ sb.justify }}">
-      <button onClick="{{ sb.toggle }}" title="ซ่อน / แสดงเมนู" style="width:34px;height:34px;flex:none;border-radius:8px;border:1px solid rgba(233,233,237,.16);background:transparent;color:#b2b6ca;display:flex;align-items:center;justify-content:center;cursor:pointer" style-hover="background:rgba(233,233,237,.07)"><i class="{{ sb.icon }}" style="font-size:17px"></i></button>
-      <sc-if value="{{ sb.open }}" hint-placeholder-val="{{ true }}">
-      <div style="min-width:0">
-        <div style="font-size:9px;letter-spacing:.13em;text-transform:uppercase;color:#75798c">PK-CRL · PLANT 1300</div>
-        <div style="font-size:15px;font-weight:500;letter-spacing:-.02em;font-family:'IBM Plex Mono',monospace;white-space:nowrap">Report_25-08-2026</div>
-      </div>
-      </sc-if>
+      <button onClick="{{ sb.toggle }}" title="Asiametal logo · Toggle menu" style="width:{{ sb.logoW }};height:42px;flex:none;border:0;border-radius:10px;background:transparent;padding:0;display:flex;align-items:center;justify-content:center;cursor:pointer" style-hover="background:rgba(233,233,237,.07)"><img src="uploads/pk-crl-logo.svg" alt="Asiametal logo" style="width:{{ sb.logoImgW }};height:auto;max-height:36px;display:block"></button>
     </div>
 
     <div style="display:flex;flex-direction:column;gap:2px;padding:0 {{ sb.navPad }}">
@@ -656,7 +651,7 @@ class Component extends DCLogic {
     const sb = {
       open, w: open ? '236px' : '62px', pad: open ? '20px' : '14px',
       navPad: open ? '10px' : '14px', justify: open ? 'flex-start' : 'center',
-      icon: open ? 'ph ph-sidebar-simple' : 'ph ph-list',
+      icon: open ? 'ph ph-sidebar-simple' : 'ph ph-list', logoW: open ? '112px' : '42px', logoImgW: open ? '104px' : '36px',
       toggle: () => this.setState({navOpen:!open})
     };
 
