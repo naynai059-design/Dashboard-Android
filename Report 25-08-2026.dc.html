@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script src="./support.js"></script>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 </head>
 <body>
 <x-dc>
@@ -103,6 +104,8 @@ a{color:#b5abfc;text-decoration:none}a:hover{color:#d2cefd}
 .overview-power-card{display:none!important}
 .data-upload-zone{border:1px dashed rgba(145,132,217,.65);border-radius:10px;padding:12px;background:#1b1d2b}
 .data-upload-zone input{width:100%;color:#b8bfd4;font:11px inherit}
+.data-upload-inputs{display:flex;flex-direction:column;gap:8px}
+.data-upload-inputs label{font-size:10px;color:#b8bfd4;display:flex;flex-direction:column;gap:4px}
 .data-type-picker{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:9px}
 .data-type-picker button{border:1px solid rgba(233,233,237,.15);border-radius:7px;background:#232532;color:#b8bfd4;padding:8px 6px;font:11px inherit;cursor:pointer}
 .data-type-picker button:first-child{border-color:#36d4c0;color:#36d4c0}
@@ -137,16 +140,13 @@ a{color:#b5abfc;text-decoration:none}a:hover{color:#d2cefd}
     <div style="margin-top:auto;padding:0 20px;display:flex;flex-direction:column;gap:9px">
       <div style="font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;color:#75798c">Data Source</div>
       <div class="data-upload-zone">
-        <div style="font-size:11px;color:#e9e9ed;margin-bottom:8px">Upload master data</div>
-        <input type="file" accept=".xlsx,.xls,.csv" onChange="{{ uploadData }}" aria-label="Upload master data">
-        <div style="font-size:10px;color:#75798c;margin-top:6px">{{ uploadName }}</div>
-        <sc-if value="{{ uploadReady }}" hint-placeholder-val="{{ false }}">
-        <div class="data-type-picker">
-          <button onClick="{{ chooseSap }}">SAP</button>
-          <button onClick="{{ chooseProduction }}">Production Summary</button>
+        <div style="font-size:11px;color:#e9e9ed;margin-bottom:8px">Upload source data</div>
+        <div class="data-upload-inputs">
+          <label>SAP export<input type="file" accept=".xlsx,.xls,.csv" onChange="{{ uploadSap }}" aria-label="Upload SAP export"></label>
+          <label>Production Summary<input type="file" accept=".xlsx,.xls,.csv" onChange="{{ uploadProduction }}" aria-label="Upload Production Summary"></label>
         </div>
-        <div style="font-size:10px;color:#36d4c0;margin-top:7px">{{ uploadType }}</div>
-        </sc-if>
+        <div style="font-size:10px;color:#36d4c0;margin-top:7px">{{ uploadStatus }}</div>
+        <div style="font-size:10px;color:#75798c;margin-top:4px">{{ uploadMessage }}</div>
       </div>
       <div style="height:1px;background:linear-gradient(to right,rgba(233,233,237,.14),transparent);margin:4px 0"></div>
       <div style="font-size:10px;color:#75798c;line-height:1.6">Yield target 98 / 95% · Abnormal loss &gt; 2%</div>
@@ -591,19 +591,87 @@ const META = {
 };
 
 class Component extends DCLogic {
-  state = { tab:'overview', order:'138100000559', allLog:false, raw:null, navOpen:true, dateStart:'2026-05-01', dateEnd:'2026-05-02', uploadName:'No file selected', uploadType:'Select data type after upload', uploadReady:false, shiftMode:'D' };
+  state = { tab:'overview', order:'138100000559', allLog:false, raw:null, navOpen:true, dateStart:'2026-05-01', dateEnd:'2026-05-02', shiftMode:'D', uploadStatus:'No files uploaded', uploadMessage:'Upload SAP and Production Summary separately', dailyOverride:null };
 
   componentDidMount(){
     import('./data/coils.js').then(m => this.setState({raw:m.ORDERS_RAW})).catch(e => console.error('coils.js', e));
   }
 
-  uploadData = event => {
-    const file = event.target.files && event.target.files[0];
-    if (file) this.setState({uploadName:file.name, uploadType:'Select SAP or Production Summary', uploadReady:true});
-  };
+  uploadSap = event => this.readUpload('sap', event);
+  uploadProduction = event => this.readUpload('production', event);
 
-  chooseSap = () => { if (this.state.uploadName !== 'No file selected') this.setState({uploadType:'SAP'}); };
-  chooseProduction = () => { if (this.state.uploadName !== 'No file selected') this.setState({uploadType:'Production Summary'}); };
+  readUpload(type, event){
+    const file = event.target.files && event.target.files[0];
+    if (!file) return;
+    if (!window.XLSX) {
+      this.setState({uploadStatus:'Parser unavailable', uploadMessage:'Refresh with internet access to load the Excel parser'});
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = e => {
+      try {
+        const workbook = XLSX.read(e.target.result, {type:'array', cellDates:true});
+        if (type === 'sap') {
+          const raw = this.parseSapWorkbook(workbook);
+          if (!raw.length) throw new Error('No SAP rows found');
+          this.setState({raw, uploadStatus:'SAP loaded', uploadMessage:file.name+' · '+raw.length+' production orders · Production Summary still required'});
+        } else {
+          const dailyOverride = this.parseProductionWorkbook(workbook);
+          const dayCount = Object.keys(dailyOverride).length;
+          if (!dayCount) throw new Error('No dated sheets found (expected sheet names like 01-05-26)');
+          this.setState({dailyOverride, uploadStatus:'Production Summary loaded', uploadMessage:file.name+' · '+dayCount+' days parsed · Power / Gas / Scrap / Uptime updated, other fields kept as-is'});
+        }
+      } catch (error) {
+        this.setState({uploadStatus:'Upload failed', uploadMessage:file.name+' · '+error.message});
+      }
+    };
+    reader.onerror = () => this.setState({uploadStatus:'Upload failed', uploadMessage:file.name+' could not be read'});
+    reader.readAsArrayBuffer(file);
+  }
+
+  parseSapWorkbook(workbook){
+    const rows = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], {defval:null});
+    const grouped = {};
+    rows.forEach(row => {
+      const order = row['Production Order'];
+      if (!order || row['Batch'] == null || row['GR Quantity'] == null || row['GI Quantity'] == null) return;
+      const id = String(order);
+      if (!grouped[id]) grouped[id] = {o:id, desc:row['Material Description']||'', comp:row['Component Description']||'', date:this.sapDate(row['Posting Date']), wc:row.WC||'', c:[]};
+      grouped[id].c.push([String(row['Com. Batch']||''),String(row.Batch),Number(row['GI Quantity'])||0,Number(row['GR Quantity'])||0,this.sapTime(row['GI Entry Time'])]);
+    });
+    return Object.values(grouped);
+  }
+
+  sapDate(value){
+    if (value instanceof Date) return (value.getMonth()+1)+'/'+value.getDate()+'/'+String(value.getFullYear()).slice(-2);
+    return String(value||'');
+  }
+
+  sapTime(value){
+    if (value instanceof Date) return value.toLocaleTimeString('en-US');
+    return String(value||'');
+  }
+
+  /* แผ่นรายวันตั้งชื่อ DD-MM-YY (เช่น 01-05-26) ตำแหน่งเซลล์คงที่ทุกแผ่น ยืนยันแล้วจากไฟล์ตัวอย่าง:
+     L33 ไฟฟ้า CRL / L15 ไฟฟ้า PK / L27 แก๊สธรรมชาติ / L39 เศษวัสดุรวม / O12 อัตราการทำงาน — ฟิลด์อื่นยังไม่พบตำแหน่งที่แน่นอน จึงไม่ดึง */
+  parseProductionWorkbook(workbook){
+    const parsed = {};
+    workbook.SheetNames.forEach(name => {
+      const m = name.trim().match(/^(\d{2})-(\d{2})-(\d{2})$/);
+      if (!m) return;
+      const sheet = workbook.Sheets[name];
+      const cell = ref => { const c = sheet[ref]; return c && typeof c.v === 'number' ? c.v : null; };
+      const day = {};
+      const powerCrl = cell('L33'); if (powerCrl != null) day.powerCrl = powerCrl;
+      const powerPk = cell('L15'); if (powerPk != null) day.powerPk = powerPk;
+      const gas = cell('L27'); if (gas != null) day.gas = gas;
+      const scrap = cell('L39'); if (scrap != null) day.scrap = scrap;
+      const uptime = cell('O12'); if (uptime != null) day.uptime = (uptime * 100).toFixed(2);
+      if (Object.keys(day).length) parsed['20' + m[3] + '-' + m[2] + '-' + m[1]] = day;
+    });
+    return parsed;
+  }
+
   selectNight = () => this.setState({shiftMode:'N'});
   selectDay = () => this.setState({shiftMode:'D'});
 
@@ -692,10 +760,15 @@ class Component extends DCLogic {
       yield:totYield.toFixed(1), gap:(100-totYield).toFixed(1)
     };
 
-    const dailyValues = {
+    const dailyDefaults = {
       '2026-05-01': {powerCrl:14587,powerPk:2573,acid:4,gas:1224,coolant:85,scrap:628,downtime:79,uptime:'86.90',throughput:'43.78'},
       '2026-05-02': {powerCrl:12198,powerPk:2537,acid:4,gas:1168,coolant:80,scrap:1886,downtime:77,uptime:'82.50',throughput:'40.89'}
     };
+    const dailyOverride = s.dailyOverride || {};
+    const dailyValues = {};
+    Object.keys(dailyDefaults).concat(Object.keys(dailyOverride)).forEach(d => {
+      if (!dailyValues[d]) dailyValues[d] = {...(dailyDefaults[d]||{}), ...(dailyOverride[d]||{})};
+    });
     const dayKeys = Object.keys(dailyValues).filter(d => d>=s.dateStart && d<=s.dateEnd);
     const endValues = dailyValues[s.dateEnd] || {};
     const rangeValue = key => dayKeys.reduce((total,d) => total + (dailyValues[d][key] || 0), 0);
@@ -800,7 +873,11 @@ class Component extends DCLogic {
         {label:'Avg. Input / HRC Coil / 平均输入', v:fmt(sel0.gi/n), color:'#e9e9ed'},
         {label:'Avg. Output / CRC Coil / 平均输出', v:fmt(sel0.gr/n), color:'#b5abfc'}
       ]
-    } : {id:'—', volume:[], weight:[]};
+    } : {
+      id:'—', window:'', crcSize:'—', hrcSize:'—', coilCount:0,
+      loss:'—', lossPer:'—', yield:'—', yieldColor:'#75798c', yieldNote:'ไม่มีข้อมูลในช่วงที่เลือก',
+      volume:[], weight:[]
+    };
 
     /* ── Weight Comparison ── */
     const X0=56, X1=980, Y0=40, Y1=300;
@@ -901,6 +978,7 @@ class Component extends DCLogic {
 
     return {
       sb, nav, isOverview:s.tab==='overview', isQuality:s.tab==='quality', isOrders:s.tab==='orders', infographicCards, infographicMix, overviewBars, shiftMode:s.shiftMode, selectNight:this.selectNight, selectDay:this.selectDay,
+      uploadStatus:s.uploadStatus, uploadMessage:s.uploadMessage,
       dateStart:s.dateStart, dateEnd:s.dateEnd, dateEndLabel:formatDate(s.dateEnd), dateMin:'2026-01-01', dateMax:'2026-12-31',
       dateStartChange:this.changeDateRange('start'), dateEndChange:this.changeDateRange('end'),
       dateLabel, pageTitle, dateCount: ords.length+' Order · '+tot.n+' ม้วน',
